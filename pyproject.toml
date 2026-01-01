@@ -1,0 +1,31 @@
+[project]
+name = "beancounters"
+version = "0.1.0"
+description = "Demo project showing how to use Norwegian Beancount importers together"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beancount>=3.0.0",
+    "fava>=1.29",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+import-transactions = "beancounters.importers:main"
+
+[tool.uv]
+package = true
+
+[tool.uv.sources]
+beangulp = { git = "https://github.com/beancount/beangulp" }
+beancount-no-amex = { git = "https://github.com/staticaland/beancount-no-amex" }
+beancount-no-dnb = { git = "https://github.com/staticaland/beancount-no-dnb" }
+beancount-no-sparebank1 = { git = "https://github.com/staticaland/beancount-no-sparebank1" }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.backends"

@@ -1,0 +1,39 @@
+option "title" "Beancounters Demo"
+option "operating_currency" "NOK"
+
+; Bank accounts
+2020-01-01 open Assets:Bank:SpareBank1:Checking NOK
+2020-01-01 open Assets:Bank:SpareBank1:Savings NOK
+
+; Credit cards
+2020-01-01 open Liabilities:CreditCard:DNB NOK
+2020-01-01 open Liabilities:CreditCard:Amex NOK
+
+; Expense accounts
+2020-01-01 open Expenses:Groceries NOK
+2020-01-01 open Expenses:Transport:Public NOK
+2020-01-01 open Expenses:Transport:Fuel NOK
+2020-01-01 open Expenses:Subscriptions:Music NOK
+2020-01-01 open Expenses:Subscriptions:Streaming NOK
+2020-01-01 open Expenses:Subscriptions:Internet NOK
+2020-01-01 open Expenses:Subscriptions:Dev NOK
+2020-01-01 open Expenses:Shopping:Electronics NOK
+2020-01-01 open Expenses:Shopping:Sports NOK
+2020-01-01 open Expenses:Shopping:Clothing NOK
+2020-01-01 open Expenses:Alcohol NOK
+2020-01-01 open Expenses:Coffee NOK
+2020-01-01 open Expenses:Services NOK
+2020-01-01 open Expenses:Housing:Rent NOK
+2020-01-01 open Expenses:Travel:Flights NOK
+2020-01-01 open Expenses:Uncategorized NOK
+
+; Income accounts
+2020-01-01 open Income:Salary NOK
+2020-01-01 open Income:TaxRefund NOK
+2020-01-01 open Income:Other NOK
+
+; Equity
+2020-01-01 open Equity:Opening-Balances NOK
+
+; Include imported transactions
+include "imports/*.beancount"
