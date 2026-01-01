@@ -7,6 +7,10 @@ requires-python = ">=3.12"
 dependencies = [
     "beancount>=3.0.0",
     "fava>=1.29",
+    "beangulp",
+    "beancount-no-amex",
+    "beancount-no-dnb",
+    "beancount-no-sparebank1",
 ]
 
 [project.optional-dependencies]
@@ -28,4 +32,4 @@ beancount-no-sparebank1 = { git = "https://github.com/staticaland/beancount-no-s
 
 [build-system]
 requires = ["hatchling"]
-build-backend = "hatchling.backends"
+build-backend = "hatchling.build"

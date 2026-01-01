@@ -121,7 +121,7 @@ def get_importers():
                     match("VINMONOPOLET") >> "Expenses:Alcohol",
                     match("SAS") >> "Expenses:Travel:Flights",
                 ],
-                default_expense_account="Expenses:Uncategorized",
+                default_account="Expenses:Uncategorized",
             )
         ),
     ]
@@ -130,7 +130,7 @@ def get_importers():
 def main():
     """Entry point for the import-transactions command."""
     ingest = Ingest(get_importers())
-    ingest.main()
+    ingest.cli()
 
 
 if __name__ == "__main__":
