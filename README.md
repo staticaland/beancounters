@@ -10,13 +10,35 @@ Demo project showing how to use Norwegian Beancount importers together.
 
 ## Demo Data
 
-The `data/` directory contains sample bank statements:
+The `data/` directory contains sample bank statements split into monthly exports,
+plus an overlapping export to demonstrate deduplication:
 
 ```
 data/
-├── sparebank1/transactions.csv    # SpareBank 1 CSV export
-├── dnb/statement.xlsx             # DNB Mastercard Excel export
-└── amex/activity.qbo              # American Express QBO export
+├── sparebank1/
+│   ├── 2025-01.csv
+│   ├── 2025-02.csv
+│   ├── 2025-03.csv
+│   ├── 2025-04.csv
+│   ├── 2025-05.csv
+│   ├── 2025-06.csv
+│   └── 2025-02-15_to_2025-04-15.csv
+├── dnb/
+│   ├── 2025-01.xlsx
+│   ├── 2025-02.xlsx
+│   ├── 2025-03.xlsx
+│   ├── 2025-04.xlsx
+│   ├── 2025-05.xlsx
+│   ├── 2025-06.xlsx
+│   └── 2025-02-15_to_2025-04-15.xlsx
+└── amex/
+    ├── 2025-01.qbo
+    ├── 2025-02.qbo
+    ├── 2025-03.qbo
+    ├── 2025-04.qbo
+    ├── 2025-05.qbo
+    ├── 2025-06.qbo
+    └── 2025-02-15_to_2025-04-15.qbo
 ```
 
 ## Quick Start
