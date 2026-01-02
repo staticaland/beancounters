@@ -1,0 +1,77 @@
+name: Import Transactions
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  import:
+    name: Import Bank Transactions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Import transactions
+        id: import
+        run: |
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          uv run import-transactions extract data/ 2>&1 || true
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Write summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
+          # Transaction Import Results
+
+          This workflow automatically imports bank transactions from the sample data files
+          using the Norwegian Beancount importers configured in this project.
+
+          ## Data Sources
+
+          The following bank statement files were processed:
+
+          | Bank | File | Format |
+          |------|------|--------|
+          | SpareBank1 | `data/sparebank1/transactions.csv` | CSV |
+          | DNB Mastercard | `data/dnb/statement.xlsx` | Excel |
+          | American Express | `data/amex/activity.qbo` | QBO/OFX |
+
+          ## How It Works
+
+          1. **Beangulp** reads each bank statement file
+          2. **Pattern matching** automatically categorizes transactions (e.g., KIWI → Expenses:Groceries)
+          3. **Beancount format** output is generated, ready for inclusion in your ledger
+
+          ## Imported Transactions
+
+          ```beancount
+          SUMMARY_EOF
+
+          uv run import-transactions extract data/ >> $GITHUB_STEP_SUMMARY 2>&1 || true
+
+          cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
+          ```
+
+          ## Next Steps
+
+          To use these transactions in your ledger:
+          1. Save the output above to a file in `imports/` (e.g., `imports/2025-02.beancount`)
+          2. The main ledger automatically includes all files from `imports/` via `include "imports/*.beancount"`
+          3. View your finances with `uv run fava main.beancount`
+          SUMMARY_EOF
