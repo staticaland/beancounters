@@ -130,7 +130,13 @@ This document outlines step-by-step improvements to make the beancounters test r
 ### 5.3 Add inter-account transfers
 - [ ] Add matching transfers between SpareBank1 checking and savings
 - [ ] Add credit card payments from checking account
-- [ ] Ensure transfer pairs have matching amounts
+- [ ] Add mortgage payments from checking to mortgage account (recurring monthly)
+- [ ] Add rent payments (alternative to mortgage for diverse scenarios)
+- [ ] Add loan payments (car loan, student loan) from checking account
+- [ ] Add automatic investment/savings transfers (recurring)
+- [ ] Add utility bill payments (electricity, internet, water)
+- [ ] Add insurance premium payments (car, home, health insurance)
+- [ ] Ensure transfer pairs have matching amounts and dates
 
 ---
 
