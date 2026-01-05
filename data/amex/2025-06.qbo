@@ -2,7 +2,7 @@
 <?OFX OFXHEADER="200" VERSION="202" SECURITY="NONE" OLDFILEUID="NONE" NEWFILEUID="NONE"?>
 <!--
     Demo QBO file for American Express Norway importer.
-    Contains typical Norwegian spending patterns.
+    Contains home and diverse merchants.
 -->
 <OFX>
   <SIGNONMSGSRSV1>
@@ -11,7 +11,7 @@
         <CODE>0</CODE>
         <SEVERITY>INFO</SEVERITY>
       </STATUS>
-      <DTSERVER>20250228000000</DTSERVER>
+      <DTSERVER>20250630000000</DTSERVER>
       <LANGUAGE>ENG</LANGUAGE>
       <FI>
         <ORG>AMEX</ORG>
@@ -31,121 +31,175 @@
           <ACCTID>DEMO|AMEX</ACCTID>
         </CCACCTFROM>
         <BANKTRANLIST>
-          <DTSTART>20250201000000</DTSTART>
-          <DTEND>20250228000000</DTEND>
+          <DTSTART>20250601000000</DTSTART>
+          <DTEND>20250630000000</DTEND>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250228000000</DTPOSTED>
-            <TRNAMT>-1299.00</TRNAMT>
-            <FITID>DEMO001</FITID>
-            <NAME>ELKJOP STORO</NAME>
-            <MEMO>Electronics purchase</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250225000000</DTPOSTED>
-            <TRNAMT>-89.00</TRNAMT>
-            <FITID>DEMO002</FITID>
+            <DTPOSTED>20250630000000</DTPOSTED>
+            <TRNAMT>-129.00</TRNAMT>
+            <FITID>JUN001</FITID>
             <NAME>SPOTIFY AB</NAME>
             <MEMO>Monthly subscription</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250223000000</DTPOSTED>
-            <TRNAMT>-459.00</TRNAMT>
-            <FITID>DEMO003</FITID>
-            <NAME>VINMONOPOLET AKER BRYGGE</NAME>
-            <MEMO>Wine purchase</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250220000000</DTPOSTED>
-            <TRNAMT>-234.50</TRNAMT>
-            <FITID>DEMO004</FITID>
-            <NAME>KIWI 587 MAJORSTUEN</NAME>
+            <DTPOSTED>20250629000000</DTPOSTED>
+            <TRNAMT>-423.45</TRNAMT>
+            <FITID>JUN002</FITID>
+            <NAME>KIWI LØKKA</NAME>
             <MEMO>Groceries</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250218000000</DTPOSTED>
+            <DTPOSTED>20250628000000</DTPOSTED>
             <TRNAMT>-179.00</TRNAMT>
-            <FITID>DEMO005</FITID>
+            <FITID>JUN003</FITID>
             <NAME>NETFLIX.COM</NAME>
-            <MEMO>Streaming service</MEMO>
+            <MEMO>Streaming</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250215000000</DTPOSTED>
-            <TRNAMT>-3450.00</TRNAMT>
-            <FITID>DEMO006</FITID>
-            <NAME>SAS EUROBONUS OSLO</NAME>
-            <MEMO>Flight booking</MEMO>
+            <DTPOSTED>20250627000000</DTPOSTED>
+            <TRNAMT>-899.00</TRNAMT>
+            <FITID>JUN004</FITID>
+            <NAME>SPORT OUTLET ALNA</NAME>
+            <MEMO>Sports</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250212000000</DTPOSTED>
-            <TRNAMT>-567.80</TRNAMT>
-            <FITID>DEMO007</FITID>
-            <NAME>MENY BOGSTADVEIEN</NAME>
+            <DTPOSTED>20250625000000</DTPOSTED>
+            <TRNAMT>-612.80</TRNAMT>
+            <FITID>JUN005</FITID>
+            <NAME>REMA 1000 STORO</NAME>
             <MEMO>Groceries</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250210000000</DTPOSTED>
-            <TRNAMT>-129.00</TRNAMT>
-            <FITID>DEMO008</FITID>
-            <NAME>GITHUB.COM</NAME>
-            <MEMO>Pro subscription</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>CREDIT</TRNTYPE>
-            <DTPOSTED>20250208000000</DTPOSTED>
-            <TRNAMT>500.00</TRNAMT>
-            <FITID>DEMO009</FITID>
-            <NAME>REFUND - ELKJOP</NAME>
-            <MEMO>Product return</MEMO>
+            <DTPOSTED>20250624000000</DTPOSTED>
+            <TRNAMT>-567.00</TRNAMT>
+            <FITID>JUN006</FITID>
+            <NAME>PRINCESS GRUNERLØKKA</NAME>
+            <MEMO>Home goods</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250205000000</DTPOSTED>
-            <TRNAMT>-892.00</TRNAMT>
-            <FITID>DEMO010</FITID>
-            <NAME>REMA 1000 TORSHOV</NAME>
-            <MEMO>Groceries</MEMO>
+            <DTPOSTED>20250622000000</DTPOSTED>
+            <TRNAMT>-534.00</TRNAMT>
+            <FITID>JUN007</FITID>
+            <NAME>VINMONOPOLET MAJORSTUEN</NAME>
+            <MEMO>Wine</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250203000000</DTPOSTED>
-            <TRNAMT>-45.00</TRNAMT>
-            <FITID>DEMO011</FITID>
-            <NAME>STARBUCKS KARL JOHAN</NAME>
+            <DTPOSTED>20250620000000</DTPOSTED>
+            <TRNAMT>-79.00</TRNAMT>
+            <FITID>JUN008</FITID>
+            <NAME>STARBUCKS GRØNLAND</NAME>
             <MEMO>Coffee</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250201000000</DTPOSTED>
-            <TRNAMT>-1890.00</TRNAMT>
-            <FITID>DEMO012</FITID>
-            <NAME>H&amp;M OSLO CITY</NAME>
-            <MEMO>Clothing</MEMO>
+            <DTPOSTED>20250618000000</DTPOSTED>
+            <TRNAMT>-4567.00</TRNAMT>
+            <FITID>JUN009</FITID>
+            <NAME>BOHUS ALNA</NAME>
+            <MEMO>Furniture</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250617000000</DTPOSTED>
+            <TRNAMT>-345.00</TRNAMT>
+            <FITID>JUN010</FITID>
+            <NAME>JERNIA STORO</NAME>
+            <MEMO>Home goods</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250615000000</DTPOSTED>
+            <TRNAMT>-2345.00</TRNAMT>
+            <FITID>JUN011</FITID>
+            <NAME>SKEIDAR STORO</NAME>
+            <MEMO>Furniture</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250614000000</DTPOSTED>
+            <TRNAMT>-567.00</TRNAMT>
+            <FITID>JUN012</FITID>
+            <NAME>TOYS R US OSLO</NAME>
+            <MEMO>Toys</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250612000000</DTPOSTED>
+            <TRNAMT>-534.60</TRNAMT>
+            <FITID>JUN013</FITID>
+            <NAME>MENY CC VEST</NAME>
+            <MEMO>Groceries</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250610000000</DTPOSTED>
+            <TRNAMT>-189.00</TRNAMT>
+            <FITID>JUN014</FITID>
+            <NAME>SØSTRENE GRENE BOGSTADVEIEN</NAME>
+            <MEMO>Home decor</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250608000000</DTPOSTED>
+            <TRNAMT>-678.00</TRNAMT>
+            <FITID>JUN015</FITID>
+            <NAME>TILBORDS ALNA</NAME>
+            <MEMO>Home goods</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250606000000</DTPOSTED>
+            <TRNAMT>-129.00</TRNAMT>
+            <FITID>JUN016</FITID>
+            <NAME>GITHUB.COM</NAME>
+            <MEMO>Pro subscription</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250603000000</DTPOSTED>
+            <TRNAMT>-1234.50</TRNAMT>
+            <FITID>JUN017</FITID>
+            <NAME>COOP OBS STORO</NAME>
+            <MEMO>Groceries</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250601000000</DTPOSTED>
+            <TRNAMT>-2899.00</TRNAMT>
+            <FITID>JUN018</FITID>
+            <NAME>KOMPLETT.NO</NAME>
+            <MEMO>Electronics</MEMO>
           </STMTTRN>
 
         </BANKTRANLIST>
         <LEDGERBAL>
-          <BALAMT>-8734.30</BALAMT>
-          <DTASOF>20250228000000</DTASOF>
+          <BALAMT>-16911.35</BALAMT>
+          <DTASOF>20250630000000</DTASOF>
         </LEDGERBAL>
       </CCSTMTRS>
     </CCSTMTTRNRS>

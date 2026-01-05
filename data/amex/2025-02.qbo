@@ -2,7 +2,7 @@
 <?OFX OFXHEADER="200" VERSION="202" SECURITY="NONE" OLDFILEUID="NONE" NEWFILEUID="NONE"?>
 <!--
     Demo QBO file for American Express Norway importer.
-    Contains typical Norwegian spending patterns.
+    Contains similar name tests and diverse merchants.
 -->
 <OFX>
   <SIGNONMSGSRSV1>
@@ -37,26 +37,53 @@
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250228000000</DTPOSTED>
-            <TRNAMT>-1299.00</TRNAMT>
-            <FITID>DEMO001</FITID>
-            <NAME>ELKJOP STORO</NAME>
-            <MEMO>Electronics purchase</MEMO>
+            <TRNAMT>-169.00</TRNAMT>
+            <FITID>FEB001</FITID>
+            <NAME>SPOTIFY FAMILY</NAME>
+            <MEMO>Family subscription</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250227000000</DTPOSTED>
+            <TRNAMT>-289.50</TRNAMT>
+            <FITID>FEB002</FITID>
+            <NAME>KIWI MINIPRIS LØKKA</NAME>
+            <MEMO>Groceries</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250226000000</DTPOSTED>
+            <TRNAMT>-219.00</TRNAMT>
+            <FITID>FEB003</FITID>
+            <NAME>NETFLIX PREMIUM</NAME>
+            <MEMO>Premium subscription</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250225000000</DTPOSTED>
-            <TRNAMT>-89.00</TRNAMT>
-            <FITID>DEMO002</FITID>
-            <NAME>SPOTIFY AB</NAME>
-            <MEMO>Monthly subscription</MEMO>
+            <TRNAMT>-345.00</TRNAMT>
+            <FITID>FEB004</FITID>
+            <NAME>REMA TORSHOV</NAME>
+            <MEMO>Groceries - no 1000</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250223000000</DTPOSTED>
-            <TRNAMT>-459.00</TRNAMT>
-            <FITID>DEMO003</FITID>
+            <DTPOSTED>20250224000000</DTPOSTED>
+            <TRNAMT>-567.00</TRNAMT>
+            <FITID>FEB005</FITID>
+            <NAME>JULA OSLO</NAME>
+            <MEMO>Hardware</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250222000000</DTPOSTED>
+            <TRNAMT>-489.00</TRNAMT>
+            <FITID>FEB006</FITID>
             <NAME>VINMONOPOLET AKER BRYGGE</NAME>
             <MEMO>Wine purchase</MEMO>
           </STMTTRN>
@@ -64,87 +91,114 @@
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250220000000</DTPOSTED>
-            <TRNAMT>-234.50</TRNAMT>
-            <FITID>DEMO004</FITID>
-            <NAME>KIWI 587 MAJORSTUEN</NAME>
-            <MEMO>Groceries</MEMO>
+            <TRNAMT>-95.00</TRNAMT>
+            <FITID>FEB007</FITID>
+            <NAME>STARBUCKS AKER BRYGGE</NAME>
+            <MEMO>Coffee</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250218000000</DTPOSTED>
-            <TRNAMT>-179.00</TRNAMT>
-            <FITID>DEMO005</FITID>
-            <NAME>NETFLIX.COM</NAME>
-            <MEMO>Streaming service</MEMO>
+            <TRNAMT>-789.00</TRNAMT>
+            <FITID>FEB008</FITID>
+            <NAME>BILTEMA ALF</NAME>
+            <MEMO>Auto parts</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250217000000</DTPOSTED>
+            <TRNAMT>-129.00</TRNAMT>
+            <FITID>FEB009</FITID>
+            <NAME>GITHUB.COM</NAME>
+            <MEMO>Pro subscription</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250215000000</DTPOSTED>
-            <TRNAMT>-3450.00</TRNAMT>
-            <FITID>DEMO006</FITID>
-            <NAME>SAS EUROBONUS OSLO</NAME>
-            <MEMO>Flight booking</MEMO>
+            <TRNAMT>-1456.00</TRNAMT>
+            <FITID>FEB010</FITID>
+            <NAME>COOP OBS BYGG ALNA</NAME>
+            <MEMO>Building materials</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250214000000</DTPOSTED>
+            <TRNAMT>-3456.00</TRNAMT>
+            <FITID>FEB011</FITID>
+            <NAME>IKEA FURUSET</NAME>
+            <MEMO>Furniture</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250212000000</DTPOSTED>
-            <TRNAMT>-567.80</TRNAMT>
-            <FITID>DEMO007</FITID>
-            <NAME>MENY BOGSTADVEIEN</NAME>
+            <TRNAMT>-489.30</TRNAMT>
+            <FITID>FEB012</FITID>
+            <NAME>MENY TORSHOV</NAME>
             <MEMO>Groceries</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250210000000</DTPOSTED>
-            <TRNAMT>-129.00</TRNAMT>
-            <FITID>DEMO008</FITID>
-            <NAME>GITHUB.COM</NAME>
-            <MEMO>Pro subscription</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>CREDIT</TRNTYPE>
-            <DTPOSTED>20250208000000</DTPOSTED>
-            <TRNAMT>500.00</TRNAMT>
-            <FITID>DEMO009</FITID>
-            <NAME>REFUND - ELKJOP</NAME>
-            <MEMO>Product return</MEMO>
+            <TRNAMT>-2199.00</TRNAMT>
+            <FITID>FEB013</FITID>
+            <NAME>ELKJOP ALNA</NAME>
+            <MEMO>Electronics</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250208000000</DTPOSTED>
+            <TRNAMT>-899.00</TRNAMT>
+            <FITID>FEB014</FITID>
+            <NAME>KID INTERIØR STORO</NAME>
+            <MEMO>Home decor</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250206000000</DTPOSTED>
+            <TRNAMT>-649.00</TRNAMT>
+            <FITID>FEB015</FITID>
+            <NAME>CUBUS OSLO CITY</NAME>
+            <MEMO>Clothing</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>CREDIT</TRNTYPE>
             <DTPOSTED>20250205000000</DTPOSTED>
-            <TRNAMT>-892.00</TRNAMT>
-            <FITID>DEMO010</FITID>
-            <NAME>REMA 1000 TORSHOV</NAME>
-            <MEMO>Groceries</MEMO>
+            <TRNAMT>300.00</TRNAMT>
+            <FITID>FEB016</FITID>
+            <NAME>REFUND - CUBUS</NAME>
+            <MEMO>Return</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250203000000</DTPOSTED>
-            <TRNAMT>-45.00</TRNAMT>
-            <FITID>DEMO011</FITID>
-            <NAME>STARBUCKS KARL JOHAN</NAME>
-            <MEMO>Coffee</MEMO>
+            <TRNAMT>-799.00</TRNAMT>
+            <FITID>FEB017</FITID>
+            <NAME>DRESSMANN MAJORSTUEN</NAME>
+            <MEMO>Clothing</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250201000000</DTPOSTED>
-            <TRNAMT>-1890.00</TRNAMT>
-            <FITID>DEMO012</FITID>
-            <NAME>H&amp;M OSLO CITY</NAME>
+            <TRNAMT>-1299.00</TRNAMT>
+            <FITID>FEB018</FITID>
+            <NAME>H&amp;M MAJORSTUEN</NAME>
             <MEMO>Clothing</MEMO>
           </STMTTRN>
 
         </BANKTRANLIST>
         <LEDGERBAL>
-          <BALAMT>-8734.30</BALAMT>
+          <BALAMT>-12512.80</BALAMT>
           <DTASOF>20250228000000</DTASOF>
         </LEDGERBAL>
       </CCSTMTRS>
