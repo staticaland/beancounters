@@ -2,7 +2,7 @@
 <?OFX OFXHEADER="200" VERSION="202" SECURITY="NONE" OLDFILEUID="NONE" NEWFILEUID="NONE"?>
 <!--
     Demo QBO file for American Express Norway importer.
-    Contains typical Norwegian spending patterns.
+    Contains diverse Norwegian spending patterns.
 -->
 <OFX>
   <SIGNONMSGSRSV1>
@@ -11,7 +11,7 @@
         <CODE>0</CODE>
         <SEVERITY>INFO</SEVERITY>
       </STATUS>
-      <DTSERVER>20250228000000</DTSERVER>
+      <DTSERVER>20250131000000</DTSERVER>
       <LANGUAGE>ENG</LANGUAGE>
       <FI>
         <ORG>AMEX</ORG>
@@ -31,121 +31,175 @@
           <ACCTID>DEMO|AMEX</ACCTID>
         </CCACCTFROM>
         <BANKTRANLIST>
-          <DTSTART>20250201000000</DTSTART>
-          <DTEND>20250228000000</DTEND>
+          <DTSTART>20250101000000</DTSTART>
+          <DTEND>20250131000000</DTEND>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250228000000</DTPOSTED>
+            <DTPOSTED>20250131000000</DTPOSTED>
             <TRNAMT>-1299.00</TRNAMT>
-            <FITID>DEMO001</FITID>
+            <FITID>JAN001</FITID>
             <NAME>ELKJOP STORO</NAME>
             <MEMO>Electronics purchase</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250225000000</DTPOSTED>
+            <DTPOSTED>20250130000000</DTPOSTED>
             <TRNAMT>-89.00</TRNAMT>
-            <FITID>DEMO002</FITID>
+            <FITID>JAN002</FITID>
             <NAME>SPOTIFY AB</NAME>
             <MEMO>Monthly subscription</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250223000000</DTPOSTED>
+            <DTPOSTED>20250128000000</DTPOSTED>
             <TRNAMT>-459.00</TRNAMT>
-            <FITID>DEMO003</FITID>
+            <FITID>JAN003</FITID>
             <NAME>VINMONOPOLET AKER BRYGGE</NAME>
             <MEMO>Wine purchase</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250220000000</DTPOSTED>
+            <DTPOSTED>20250127000000</DTPOSTED>
+            <TRNAMT>-245.00</TRNAMT>
+            <FITID>JAN004</FITID>
+            <NAME>APOTEK 1 MAJORSTUEN</NAME>
+            <MEMO>Pharmacy</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250125000000</DTPOSTED>
             <TRNAMT>-234.50</TRNAMT>
-            <FITID>DEMO004</FITID>
+            <FITID>JAN005</FITID>
             <NAME>KIWI 587 MAJORSTUEN</NAME>
             <MEMO>Groceries</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250218000000</DTPOSTED>
+            <DTPOSTED>20250124000000</DTPOSTED>
+            <TRNAMT>-149.00</TRNAMT>
+            <FITID>JAN006</FITID>
+            <NAME>BURGER KING OSLO S</NAME>
+            <MEMO>Fast food</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250122000000</DTPOSTED>
             <TRNAMT>-179.00</TRNAMT>
-            <FITID>DEMO005</FITID>
+            <FITID>JAN007</FITID>
             <NAME>NETFLIX.COM</NAME>
             <MEMO>Streaming service</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250215000000</DTPOSTED>
+            <DTPOSTED>20250120000000</DTPOSTED>
             <TRNAMT>-3450.00</TRNAMT>
-            <FITID>DEMO006</FITID>
+            <FITID>JAN008</FITID>
             <NAME>SAS EUROBONUS OSLO</NAME>
             <MEMO>Flight booking</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250212000000</DTPOSTED>
+            <DTPOSTED>20250118000000</DTPOSTED>
             <TRNAMT>-567.80</TRNAMT>
-            <FITID>DEMO007</FITID>
+            <FITID>JAN009</FITID>
             <NAME>MENY BOGSTADVEIEN</NAME>
             <MEMO>Groceries</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250210000000</DTPOSTED>
+            <DTPOSTED>20250117000000</DTPOSTED>
+            <TRNAMT>-349.00</TRNAMT>
+            <FITID>JAN010</FITID>
+            <NAME>TANUM BOKHANDEL KARL JOHAN</NAME>
+            <MEMO>Books</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250115000000</DTPOSTED>
             <TRNAMT>-129.00</TRNAMT>
-            <FITID>DEMO008</FITID>
+            <FITID>JAN011</FITID>
             <NAME>GITHUB.COM</NAME>
             <MEMO>Pro subscription</MEMO>
           </STMTTRN>
 
           <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250114000000</DTPOSTED>
+            <TRNAMT>-599.00</TRNAMT>
+            <FITID>JAN012</FITID>
+            <NAME>SATS STORO</NAME>
+            <MEMO>Gym membership</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
             <TRNTYPE>CREDIT</TRNTYPE>
-            <DTPOSTED>20250208000000</DTPOSTED>
+            <DTPOSTED>20250112000000</DTPOSTED>
             <TRNAMT>500.00</TRNAMT>
-            <FITID>DEMO009</FITID>
+            <FITID>JAN013</FITID>
             <NAME>REFUND - ELKJOP</NAME>
             <MEMO>Product return</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250205000000</DTPOSTED>
+            <DTPOSTED>20250110000000</DTPOSTED>
             <TRNAMT>-892.00</TRNAMT>
-            <FITID>DEMO010</FITID>
+            <FITID>JAN014</FITID>
             <NAME>REMA 1000 TORSHOV</NAME>
             <MEMO>Groceries</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250203000000</DTPOSTED>
+            <DTPOSTED>20250108000000</DTPOSTED>
             <TRNAMT>-45.00</TRNAMT>
-            <FITID>DEMO011</FITID>
+            <FITID>JAN015</FITID>
             <NAME>STARBUCKS KARL JOHAN</NAME>
             <MEMO>Coffee</MEMO>
           </STMTTRN>
 
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250201000000</DTPOSTED>
+            <DTPOSTED>20250105000000</DTPOSTED>
             <TRNAMT>-1890.00</TRNAMT>
-            <FITID>DEMO012</FITID>
+            <FITID>JAN016</FITID>
             <NAME>H&amp;M OSLO CITY</NAME>
             <MEMO>Clothing</MEMO>
           </STMTTRN>
 
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250103000000</DTPOSTED>
+            <TRNAMT>-459.00</TRNAMT>
+            <FITID>JAN017</FITID>
+            <NAME>PEPPES PIZZA SOLLI</NAME>
+            <MEMO>Restaurant</MEMO>
+          </STMTTRN>
+
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250101000000</DTPOSTED>
+            <TRNAMT>-129.00</TRNAMT>
+            <FITID>JAN018</FITID>
+            <NAME>MCDONALDS GRØNLAND</NAME>
+            <MEMO>Fast food</MEMO>
+          </STMTTRN>
+
         </BANKTRANLIST>
         <LEDGERBAL>
-          <BALAMT>-8734.30</BALAMT>
-          <DTASOF>20250228000000</DTASOF>
+          <BALAMT>-9676.30</BALAMT>
+          <DTASOF>20250131000000</DTASOF>
         </LEDGERBAL>
       </CCSTMTRS>
     </CCSTMTTRNRS>

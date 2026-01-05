@@ -36,10 +36,10 @@ This document outlines step-by-step improvements to make the beancounters test r
 - [ ] Add transactions with unusual FITID formats
 
 ### 1.4 Increase merchant diversity
-- [ ] Add 20+ more unique merchant names to each bank's files
-- [ ] Add merchants that should NOT match existing patterns (test uncategorized)
-- [ ] Add merchants with similar names (test regex specificity)
-- [ ] Add merchants with inconsistent casing (KIWI vs Kiwi vs kiwi)
+- [x] Add 20+ more unique merchant names to each bank's files
+- [x] Add merchants that should NOT match existing patterns (test uncategorized)
+- [x] Add merchants with similar names (test regex specificity)
+- [x] Add merchants with inconsistent casing (KIWI vs Kiwi vs kiwi)
 
 ---
 
