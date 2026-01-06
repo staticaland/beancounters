@@ -102,6 +102,46 @@ run_query() {
          ORDER BY year, month"
 
     echo ""
+    echo "## Loan Insights"
+    echo ""
+    echo "Track your mortgage payments and see how extra payments save you money on interest."
+
+    # Loan repayment savings - Extra payments made
+    run_query "How Much Do I Save by Repaying Loan?" \
+        "Extra principal payments reduce your loan faster and save on future interest. This shows your extra payments that go directly to reducing the principal." \
+        "SELECT year, month, narration, sum(position) AS extra_payment
+         WHERE account ~ 'Liabilities:Loan' AND narration ~ 'Extra'
+         GROUP BY year, month, narration
+         ORDER BY year, month"
+
+    # Loan interest paid by month
+    run_query "Interest Paid on Loan by Month" \
+        "Monthly interest payments on your mortgage. Lower interest over time means your extra payments are working!" \
+        "SELECT year, month, sum(position) AS interest_paid
+         WHERE account ~ 'Expenses:Interest'
+         GROUP BY year, month
+         ORDER BY year, month"
+
+    # Total loan principal paid down
+    run_query "Loan Principal Paid by Month" \
+        "How much of your payment goes to actually paying down the loan (not interest)." \
+        "SELECT year, month, sum(position) AS principal_paid
+         WHERE account ~ 'Liabilities:Loan' AND position > 0 NOK
+         GROUP BY year, month
+         ORDER BY year, month"
+
+    # Loan summary - total interest vs principal
+    run_query "Loan Payment Summary" \
+        "Overview of total principal paid vs total interest paid. A higher principal ratio means you're building equity faster!" \
+        "SELECT
+           'Principal Paid' AS type, sum(position) AS total
+         WHERE account ~ 'Liabilities:Loan' AND position > 0 NOK
+         UNION
+         SELECT
+           'Interest Paid' AS type, sum(position) AS total
+         WHERE account ~ 'Expenses:Interest'"
+
+    echo ""
     echo "---"
     echo "_Queries generated using \`bean-query\` from Beancount_"
 
