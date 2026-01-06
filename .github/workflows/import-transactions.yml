@@ -58,7 +58,28 @@ jobs:
           2. **Pattern matching** automatically categorizes transactions (e.g., KIWI → Expenses:Groceries)
           3. **Beancount format** output is generated, ready for inclusion in your ledger
 
+          SUMMARY_EOF
+
+      - name: Run demo queries
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
+
+          ---
+
+          SUMMARY_EOF
+
+          ./scripts/run-demo-queries.sh main.beancount >> $GITHUB_STEP_SUMMARY 2>&1 || echo "Demo queries failed" >> $GITHUB_STEP_SUMMARY
+
+      - name: Show imported transactions
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
+
+          ---
+
           ## Imported Transactions
+
+          <details>
+          <summary>Click to expand imported transactions</summary>
 
           ```beancount
           SUMMARY_EOF
@@ -67,6 +88,8 @@ jobs:
 
           cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
           ```
+
+          </details>
 
           ## Next Steps
 

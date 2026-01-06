@@ -160,6 +160,33 @@ This document outlines step-by-step improvements to make the beancounters test r
 
 ---
 
+## Phase 6.4: Demo Queries in CI Summary
+
+Display useful spending insights in the GitHub Actions summary using `bean-query`.
+
+### 6.4.1 Create demo query scripts
+- [ ] Create `scripts/` directory for query scripts
+- [ ] Create `scripts/run-demo-queries.sh` to run all demo queries
+- [ ] Add query: Monthly coffee spending
+- [ ] Add query: Monthly transport/commute spending
+- [ ] Add query: Subscriptions by month (streaming, music, internet, dev tools)
+- [ ] Add query: Quarterly spending summary by category
+- [ ] Add query: Top merchants by total spending
+
+### 6.4.2 Format query output for GitHub summary
+- [ ] Format results as markdown tables
+- [ ] Add section headers and descriptions
+- [ ] Handle empty results gracefully
+- [ ] Add trend indicators (if possible)
+
+### 6.4.3 Integrate with GitHub Actions workflow
+- [ ] Add step to run demo queries after import
+- [ ] Output query results to `$GITHUB_STEP_SUMMARY`
+- [ ] Add collapsible sections for detailed breakdowns
+- [ ] Include total counts and amounts
+
+---
+
 ## Phase 7: Documentation and Examples
 
 ### 7.1 Add test writing guide
