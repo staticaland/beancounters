@@ -32,11 +32,107 @@ option "operating_currency" "NOK"
 2020-01-01 open Income:TaxRefund NOK
 2020-01-01 open Income:Other NOK
 
+; Loan accounts
+2020-01-01 open Liabilities:Loan:Mortgage NOK
+2020-01-01 open Expenses:Interest:Mortgage NOK
+
 ; Equity
 2020-01-01 open Equity:Opening-Balances NOK
 
 ; Include imported transactions
 include "imports/*.beancount"
+
+; ============================================
+; Mortgage Loan Transactions
+; ============================================
+; Initial mortgage balance (2,000,000 NOK loan taken out)
+2020-01-15 * "Mortgage - Initial Loan"
+  Liabilities:Loan:Mortgage      -2000000.00 NOK
+  Assets:Bank:SpareBank1:Checking  2000000.00 NOK
+
+; Monthly mortgage payments for 2024-2025
+; Each payment has principal + interest components
+
+2024-01-01 * "Mortgage Payment January 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           4800.00 NOK
+  Expenses:Interest:Mortgage          7700.00 NOK
+
+2024-02-01 * "Mortgage Payment February 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           4820.00 NOK
+  Expenses:Interest:Mortgage          7680.00 NOK
+
+2024-03-01 * "Mortgage Payment March 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           4840.00 NOK
+  Expenses:Interest:Mortgage          7660.00 NOK
+
+2024-04-01 * "Mortgage Payment April 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           4860.00 NOK
+  Expenses:Interest:Mortgage          7640.00 NOK
+
+2024-05-01 * "Mortgage Payment May 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           4880.00 NOK
+  Expenses:Interest:Mortgage          7620.00 NOK
+
+2024-06-01 * "Mortgage Payment June 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           4900.00 NOK
+  Expenses:Interest:Mortgage          7600.00 NOK
+
+; Extra principal payment - paying down loan faster saves interest!
+2024-06-15 * "Extra Mortgage Payment - Savings from bonus"
+  Assets:Bank:SpareBank1:Checking  -50000.00 NOK
+  Liabilities:Loan:Mortgage         50000.00 NOK
+
+2024-07-01 * "Mortgage Payment July 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           5100.00 NOK
+  Expenses:Interest:Mortgage          7400.00 NOK
+
+2024-08-01 * "Mortgage Payment August 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           5120.00 NOK
+  Expenses:Interest:Mortgage          7380.00 NOK
+
+2024-09-01 * "Mortgage Payment September 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           5140.00 NOK
+  Expenses:Interest:Mortgage          7360.00 NOK
+
+2024-10-01 * "Mortgage Payment October 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           5160.00 NOK
+  Expenses:Interest:Mortgage          7340.00 NOK
+
+2024-11-01 * "Mortgage Payment November 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           5180.00 NOK
+  Expenses:Interest:Mortgage          7320.00 NOK
+
+2024-12-01 * "Mortgage Payment December 2024"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           5200.00 NOK
+  Expenses:Interest:Mortgage          7300.00 NOK
+
+; Another extra payment at year end
+2024-12-20 * "Extra Mortgage Payment - Year-end savings"
+  Assets:Bank:SpareBank1:Checking  -100000.00 NOK
+  Liabilities:Loan:Mortgage         100000.00 NOK
+
+2025-01-01 * "Mortgage Payment January 2025"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           5600.00 NOK
+  Expenses:Interest:Mortgage          6900.00 NOK
+
+2025-02-01 * "Mortgage Payment February 2025"
+  Assets:Bank:SpareBank1:Checking   -12500.00 NOK
+  Liabilities:Loan:Mortgage           5630.00 NOK
+  Expenses:Interest:Mortgage          6870.00 NOK
+
 ;; -*- mode: beancount -*-
 
 **** /Users/const/projects/me/beanz/beancounters/data/sparebank1/2025-01.csv
