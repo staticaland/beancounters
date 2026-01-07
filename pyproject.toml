@@ -33,3 +33,9 @@ beancount-no-sparebank1 = { git = "https://github.com/staticaland/beancount-no-s
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
