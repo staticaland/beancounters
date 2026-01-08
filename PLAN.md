@@ -59,10 +59,10 @@ This document outlines step-by-step improvements to make the beancounters test r
 - [ ] Add malformed/invalid samples for each format
 
 ### 2.3 Add importer configuration tests
-- [ ] Test that `get_importers()` returns expected number of importers
-- [ ] Test that each importer has correct account configuration
-- [ ] Test that pattern matching rules are properly defined
-- [ ] Test importer identification (file type detection)
+- [x] Test that `get_importers()` returns expected number of importers
+- [x] Test that each importer has correct account configuration
+- [x] Test that pattern matching rules are properly defined
+- [x] Test importer identification (file type detection)
 
 ---
 
