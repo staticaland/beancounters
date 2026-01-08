@@ -69,23 +69,23 @@ This document outlines step-by-step improvements to make the beancounters test r
 ## Phase 3: Add Pattern Matching Tests
 
 ### 3.1 Create SpareBank1 pattern tests
-- [ ] Test simple string matching (KIWI → Groceries)
-- [ ] Test regex patterns (REMA\s*1000)
-- [ ] Test field-based matching (to_account)
-- [ ] Test counterparty matching (salary)
-- [ ] Test default account assignment for unmatched transactions
-- [ ] Test case sensitivity behavior
+- [x] Test simple string matching (KIWI → Groceries)
+- [x] Test regex patterns (REMA\s*1000)
+- [x] Test field-based matching (to_account)
+- [x] Test counterparty matching (salary)
+- [x] Test default account assignment for unmatched transactions
+- [x] Test case sensitivity behavior
 
 ### 3.2 Create DNB pattern tests
-- [ ] Test case-insensitive matching (starbucks)
-- [ ] Test balance forward skipping
-- [ ] Test multiple patterns for same category
-- [ ] Test pattern priority (most specific wins)
+- [x] Test case-insensitive matching (starbucks)
+- [x] Test balance forward skipping
+- [x] Test multiple patterns for same category
+- [x] Test pattern priority (most specific wins)
 
 ### 3.3 Create Amex pattern tests
-- [ ] Test pattern matching for all configured patterns
-- [ ] Test credit vs debit transaction handling
-- [ ] Test transactions that should remain uncategorized
+- [x] Test pattern matching for all configured patterns
+- [x] Test credit vs debit transaction handling
+- [x] Test transactions that should remain uncategorized
 
 ---
 
