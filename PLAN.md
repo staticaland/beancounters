@@ -46,10 +46,10 @@ This document outlines step-by-step improvements to make the beancounters test r
 ## Phase 2: Create Unit Test Infrastructure
 
 ### 2.1 Set up test directory structure
-- [ ] Create `tests/` directory
-- [ ] Create `tests/__init__.py`
-- [ ] Create `tests/conftest.py` with shared fixtures
-- [ ] Add `pytest.ini` or update `pyproject.toml` with pytest configuration
+- [x] Create `tests/` directory
+- [x] Create `tests/__init__.py`
+- [x] Create `tests/conftest.py` with shared fixtures
+- [x] Add `pytest.ini` or update `pyproject.toml` with pytest configuration
 
 ### 2.2 Create test fixtures
 - [ ] Create `tests/fixtures/` directory
