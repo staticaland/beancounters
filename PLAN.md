@@ -92,11 +92,11 @@ This document outlines step-by-step improvements to make the beancounters test r
 ## Phase 4: Add Integration Tests
 
 ### 4.1 Create end-to-end import tests
-- [ ] Test full import of SpareBank1 January file
-- [ ] Test full import of DNB January file
-- [ ] Test full import of Amex January file
-- [ ] Verify output is valid beancount syntax
-- [ ] Verify all transactions are present in output
+- [x] Test full import of SpareBank1 January file
+- [x] Test full import of DNB January file
+- [x] Test full import of Amex January file
+- [x] Verify output is valid beancount syntax
+- [x] Verify all transactions are present in output
 
 ### 4.2 Add deduplication tests
 - [ ] Test that overlapping file imports identify duplicates
