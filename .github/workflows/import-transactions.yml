@@ -150,3 +150,28 @@ jobs:
           2. The main ledger automatically includes all files from `imports/` via `include "imports/*.beancount"`
           3. View your finances with `uv run fava main.beancount`
           SUMMARY_EOF
+
+      - name: Update secret gist with summary
+        if: ${{ vars.SUMMARY_GIST_ID != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GIST_PAT }}
+          GIST_ID: ${{ vars.SUMMARY_GIST_ID }}
+        run: |
+          # Build gist content with timestamp and run link
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          {
+            echo "# Beancounters Import Summary"
+            echo ""
+            echo "**Last updated:** ${TIMESTAMP}"
+            echo ""
+            echo "**GitHub Actions run:** [View run](${RUN_URL})"
+            echo ""
+            echo "---"
+            echo ""
+            cat "$GITHUB_STEP_SUMMARY"
+          } > gist_content.md
+
+          # Update the gist
+          gh gist edit "$GIST_ID" -f summary.md gist_content.md
