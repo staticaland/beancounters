@@ -143,7 +143,7 @@ This document outlines step-by-step improvements to make the beancounters test r
 ## Phase 6: Enhance CI/CD Pipeline
 
 ### 6.1 Add test execution to CI
-- [ ] Add pytest step to GitHub Actions workflow
+- [x] Add pytest step to GitHub Actions workflow
 - [ ] Configure test coverage reporting
 - [ ] Add coverage threshold requirement (e.g., 80%)
 - [ ] Upload coverage reports as artifacts
