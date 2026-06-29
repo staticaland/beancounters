@@ -21,6 +21,14 @@
           <DTSTART>20250101000000</DTSTART>
           <DTEND>20250131000000</DTEND>
           <STMTTRN>
+            <TRNTYPE>CREDIT</TRNTYPE>
+            <DTPOSTED>20250126000000</DTPOSTED>
+            <TRNAMT>499.00</TRNAMT>
+            <FITID>AMEX-202501-102</FITID>
+            <NAME>ELKJOP STORO REFUND</NAME>
+            <MEMO>Returned accessory</MEMO>
+          </STMTTRN>
+          <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250123000000</DTPOSTED>
             <TRNAMT>-2490.00</TRNAMT>

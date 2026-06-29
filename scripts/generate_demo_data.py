@@ -113,6 +113,14 @@ def bank_transactions_for_month(year: int, month: int, dnb_payment: Decimal, ame
         rows.append(BankTransaction(d(year, month, 21), "AMEX AUTOGIRO", -amex_payment, AMEX, CHECKING))
     if month in {2, 5, 9, 12}:
         rows.append(BankTransaction(d(year, month, 9), "VINMONOPOLET OSLO S", money("-689.00"), "89123456789", CHECKING))
+    if month == 1:
+        rows.extend(
+            [
+                BankTransaction(d(year, month, 8), "SKATTEETATEN", money("3150.00"), CHECKING, "99988877766"),
+                BankTransaction(d(year, month, 9), "VINMONOPOLET OSLO S", money("-689.00"), "89123456789", CHECKING),
+                BankTransaction(d(year, month, 29), "SAS EUROBONUS", money("-2490.00"), "55667788990", CHECKING),
+            ]
+        )
     if month in {3, 6, 10}:
         rows.append(BankTransaction(d(year, month, 29), "STATOIL FURUSET", money("-812.45"), "23489156123", CHECKING))
     if month == 6:
@@ -163,7 +171,7 @@ def amex_transactions_for_month(year: int, month: int, payment: Decimal) -> list
     ]
     if month in {2, 6, 10}:
         rows.append(CardTransaction(d(year, month, 20), "VINMONOPOLET AKER BRYGGE", money("-529.00"), "Wine purchase", f"AMEX-{year}{month:02d}-101"))
-    if month in {4, 9}:
+    if month in {1, 4, 9}:
         rows.append(CardTransaction(d(year, month, 26), "ELKJOP STORO REFUND", money("499.00"), "Returned accessory", f"AMEX-{year}{month:02d}-102"))
     if payment:
         rows.append(CardTransaction(d(year, month, 21), "AUTOGIROBETALING", payment, "Payment from SpareBank 1", f"AMEX-{year}{month:02d}-PAY"))
@@ -197,7 +205,7 @@ def format_nok(amount: Decimal) -> str:
 
 def write_sparebank1(path: Path, rows: list[BankTransaction]) -> None:
     with path.open("w", encoding="utf-8", newline="") as file:
-        writer = csv.writer(file, delimiter=";", quoting=csv.QUOTE_ALL)
+        writer = csv.writer(file, delimiter=";", quoting=csv.QUOTE_ALL, lineterminator="\n")
         file.write("Dato;Beskrivelse;Rentedato;Inn;Ut;Til konto;Fra konto;\n")
         for tx in rows:
             writer.writerow(

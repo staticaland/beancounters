@@ -25,7 +25,59 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --all-extras
+
+      - name: Run tests
+        id: tests
+        run: |
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run tests and capture output
+          if uv run python -m pytest tests/ -v --tb=short 2>&1 | tee test_output.txt; then
+            echo "✅ **All tests passed!**" >> $GITHUB_STEP_SUMMARY
+            echo "test_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "❌ **Some tests failed**" >> $GITHUB_STEP_SUMMARY
+            echo "test_status=failure" >> $GITHUB_OUTPUT
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Extract test summary line
+          SUMMARY_LINE=$(grep -E "^=+ .* =+$" test_output.txt | tail -1 || echo "")
+          if [ -n "$SUMMARY_LINE" ]; then
+            # Parse passed/failed counts
+            PASSED=$(echo "$SUMMARY_LINE" | grep -oE "[0-9]+ passed" || echo "0 passed")
+            FAILED=$(echo "$SUMMARY_LINE" | grep -oE "[0-9]+ failed" || echo "")
+            ERRORS=$(echo "$SUMMARY_LINE" | grep -oE "[0-9]+ error" || echo "")
+            DURATION=$(echo "$SUMMARY_LINE" | grep -oE "[0-9]+\.[0-9]+s" || echo "")
+
+            echo "| Metric | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Passed | $PASSED |" >> $GITHUB_STEP_SUMMARY
+            if [ -n "$FAILED" ]; then
+              echo "| Failed | $FAILED |" >> $GITHUB_STEP_SUMMARY
+            fi
+            if [ -n "$ERRORS" ]; then
+              echo "| Errors | $ERRORS |" >> $GITHUB_STEP_SUMMARY
+            fi
+            if [ -n "$DURATION" ]; then
+              echo "| Duration | $DURATION |" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Show test details in collapsible section
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>Click to view test details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat test_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
       - name: Import transactions
         id: import
@@ -58,7 +110,28 @@ jobs:
           2. **Pattern matching** automatically categorizes transactions (e.g., KIWI → Expenses:Groceries)
           3. **Beancount format** output is generated, ready for inclusion in your ledger
 
+          SUMMARY_EOF
+
+      - name: Run demo queries
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
+
+          ---
+
+          SUMMARY_EOF
+
+          ./scripts/run-demo-queries.sh main.beancount >> $GITHUB_STEP_SUMMARY 2>&1 || echo "Demo queries failed" >> $GITHUB_STEP_SUMMARY
+
+      - name: Show imported transactions
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
+
+          ---
+
           ## Imported Transactions
+
+          <details>
+          <summary>Click to expand imported transactions</summary>
 
           ```beancount
           SUMMARY_EOF
@@ -68,6 +141,8 @@ jobs:
           cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
           ```
 
+          </details>
+
           ## Next Steps
 
           To use these transactions in your ledger:
@@ -75,3 +150,28 @@ jobs:
           2. The main ledger automatically includes all files from `imports/` via `include "imports/*.beancount"`
           3. View your finances with `uv run fava main.beancount`
           SUMMARY_EOF
+
+      - name: Update secret gist with summary
+        if: ${{ vars.SUMMARY_GIST_ID != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GIST_PAT }}
+          GIST_ID: ${{ vars.SUMMARY_GIST_ID }}
+        run: |
+          # Build gist content with timestamp and run link
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          {
+            echo "# Beancounters Import Summary"
+            echo ""
+            echo "**Last updated:** ${TIMESTAMP}"
+            echo ""
+            echo "**GitHub Actions run:** [View run](${RUN_URL})"
+            echo ""
+            echo "---"
+            echo ""
+            cat "$GITHUB_STEP_SUMMARY"
+          } > gist_content.md
+
+          # Update the gist
+          gh gist edit "$GIST_ID" -f summary.md gist_content.md

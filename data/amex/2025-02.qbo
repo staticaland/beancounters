@@ -31,7 +31,7 @@
           <STMTTRN>
             <TRNTYPE>CREDIT</TRNTYPE>
             <DTPOSTED>20250221000000</DTPOSTED>
-            <TRNAMT>5806.90</TRNAMT>
+            <TRNAMT>5307.90</TRNAMT>
             <FITID>AMEX-202502-PAY</FITID>
             <NAME>AUTOGIROBETALING</NAME>
             <MEMO>Payment from SpareBank 1</MEMO>
