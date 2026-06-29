@@ -1,9 +1,5 @@
 <?xml version="1.0" standalone="no"?>
 <?OFX OFXHEADER="200" VERSION="202" SECURITY="NONE" OLDFILEUID="NONE" NEWFILEUID="NONE"?>
-<!--
-    Demo QBO file for American Express Norway importer.
-    Overlap file containing Feb 15 - Apr 15 2025 transactions.
--->
 <OFX>
   <SIGNONMSGSRSV1>
     <SONRS>
@@ -20,188 +16,157 @@
   </SIGNONMSGSRSV1>
   <CREDITCARDMSGSRSV1>
     <CCSTMTTRNRS>
-      <TRNUID>0</TRNUID>
-      <STATUS>
-        <CODE>0</CODE>
-        <SEVERITY>INFO</SEVERITY>
-      </STATUS>
       <CCSTMTRS>
-        <CURDEF>NOK</CURDEF>
-        <CCACCTFROM>
-          <ACCTID>DEMO|AMEX</ACCTID>
-        </CCACCTFROM>
         <BANKTRANLIST>
           <DTSTART>20250215000000</DTSTART>
           <DTEND>20250415000000</DTEND>
-
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250415000000</DTPOSTED>
-            <TRNAMT>-129.00</TRNAMT>
-            <FITID>OVL001</FITID>
-            <NAME>GITHUB.COM</NAME>
-            <MEMO>Pro subscription</MEMO>
+            <DTPOSTED>20250223000000</DTPOSTED>
+            <TRNAMT>-2490.00</TRNAMT>
+            <FITID>AMEX-202502-007</FITID>
+            <NAME>SAS EUROBONUS</NAME>
+            <MEMO>Travel</MEMO>
           </STMTTRN>
-
           <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250414000000</DTPOSTED>
-            <TRNAMT>-267.00</TRNAMT>
-            <FITID>OVL002</FITID>
-            <NAME>JUST EAT</NAME>
-            <MEMO>Food delivery</MEMO>
+            <TRNTYPE>CREDIT</TRNTYPE>
+            <DTPOSTED>20250221000000</DTPOSTED>
+            <TRNAMT>5307.90</TRNAMT>
+            <FITID>AMEX-202502-PAY</FITID>
+            <NAME>AUTOGIROBETALING</NAME>
+            <MEMO>Payment from SpareBank 1</MEMO>
           </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250412000000</DTPOSTED>
-            <TRNAMT>-534.60</TRNAMT>
-            <FITID>OVL003</FITID>
-            <NAME>MENY CC VEST</NAME>
-            <MEMO>Groceries</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250410000000</DTPOSTED>
-            <TRNAMT>-1899.00</TRNAMT>
-            <FITID>OVL004</FITID>
-            <NAME>ELKJOP LAMBERTSETER</NAME>
-            <MEMO>Electronics</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250408000000</DTPOSTED>
-            <TRNAMT>-1199.00</TRNAMT>
-            <FITID>OVL005</FITID>
-            <NAME>JACK &amp; JONES OSLO CITY</NAME>
-            <MEMO>Clothing</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250331000000</DTPOSTED>
-            <TRNAMT>-129.00</TRNAMT>
-            <FITID>OVL006</FITID>
-            <NAME>SPOTIFY</NAME>
-            <MEMO>Monthly subscription</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250330000000</DTPOSTED>
-            <TRNAMT>-312.00</TRNAMT>
-            <FITID>OVL007</FITID>
-            <NAME>Kiwi Torshov</NAME>
-            <MEMO>Groceries - mixed case</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250328000000</DTPOSTED>
-            <TRNAMT>-179.00</TRNAMT>
-            <FITID>OVL008</FITID>
-            <NAME>netflix.com</NAME>
-            <MEMO>Streaming - lowercase</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250327000000</DTPOSTED>
-            <TRNAMT>-267.50</TRNAMT>
-            <FITID>OVL009</FITID>
-            <NAME>kiwi grünerløkka</NAME>
-            <MEMO>Groceries - all lowercase</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250322000000</DTPOSTED>
-            <TRNAMT>-89.00</TRNAMT>
-            <FITID>OVL010</FITID>
-            <NAME>Starbucks Aker Brygge</NAME>
-            <MEMO>Coffee - mixed case</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250315000000</DTPOSTED>
-            <TRNAMT>-534.20</TRNAMT>
-            <FITID>OVL011</FITID>
-            <NAME>REMA 1000 GRÜNERLØKKA</NAME>
-            <MEMO>Groceries</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250314000000</DTPOSTED>
-            <TRNAMT>-75.00</TRNAMT>
-            <FITID>OVL012</FITID>
-            <NAME>starbucks bogstadveien</NAME>
-            <MEMO>Coffee - all lowercase</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250303000000</DTPOSTED>
-            <TRNAMT>-678.00</TRNAMT>
-            <FITID>OVL013</FITID>
-            <NAME>ESSO HOVINBYEN</NAME>
-            <MEMO>Fuel</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250301000000</DTPOSTED>
-            <TRNAMT>-589.00</TRNAMT>
-            <FITID>OVL014</FITID>
-            <NAME>CIRCLE K HELSFYR</NAME>
-            <MEMO>Fuel</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250228000000</DTPOSTED>
-            <TRNAMT>-169.00</TRNAMT>
-            <FITID>OVL015</FITID>
-            <NAME>SPOTIFY FAMILY</NAME>
-            <MEMO>Family subscription</MEMO>
-          </STMTTRN>
-
-          <STMTTRN>
-            <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250225000000</DTPOSTED>
-            <TRNAMT>-345.00</TRNAMT>
-            <FITID>OVL016</FITID>
-            <NAME>REMA TORSHOV</NAME>
-            <MEMO>Groceries - no 1000</MEMO>
-          </STMTTRN>
-
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250220000000</DTPOSTED>
-            <TRNAMT>-95.00</TRNAMT>
-            <FITID>OVL017</FITID>
-            <NAME>STARBUCKS AKER BRYGGE</NAME>
-            <MEMO>Coffee</MEMO>
+            <TRNAMT>-529.00</TRNAMT>
+            <FITID>AMEX-202502-101</FITID>
+            <NAME>VINMONOPOLET AKER BRYGGE</NAME>
+            <MEMO>Wine purchase</MEMO>
           </STMTTRN>
-
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250218000000</DTPOSTED>
+            <TRNAMT>-615.40</TRNAMT>
+            <FITID>AMEX-202502-006</FITID>
+            <NAME>REMA 1000 TORSHOV</NAME>
+            <MEMO>Groceries</MEMO>
+          </STMTTRN>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
             <DTPOSTED>20250215000000</DTPOSTED>
-            <TRNAMT>-1456.00</TRNAMT>
-            <FITID>OVL018</FITID>
-            <NAME>COOP OBS BYGG ALNA</NAME>
-            <MEMO>Building materials</MEMO>
+            <TRNAMT>-92.00</TRNAMT>
+            <FITID>AMEX-202502-005</FITID>
+            <NAME>STARBUCKS AKER BRYGGE</NAME>
+            <MEMO>Coffee</MEMO>
           </STMTTRN>
-
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250323000000</DTPOSTED>
+            <TRNAMT>-2490.00</TRNAMT>
+            <FITID>AMEX-202503-007</FITID>
+            <NAME>SAS EUROBONUS</NAME>
+            <MEMO>Travel</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>CREDIT</TRNTYPE>
+            <DTPOSTED>20250321000000</DTPOSTED>
+            <TRNAMT>6339.90</TRNAMT>
+            <FITID>AMEX-202503-PAY</FITID>
+            <NAME>AUTOGIROBETALING</NAME>
+            <MEMO>Payment from SpareBank 1</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250318000000</DTPOSTED>
+            <TRNAMT>-617.40</TRNAMT>
+            <FITID>AMEX-202503-006</FITID>
+            <NAME>REMA 1000 TORSHOV</NAME>
+            <MEMO>Groceries</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250315000000</DTPOSTED>
+            <TRNAMT>-92.00</TRNAMT>
+            <FITID>AMEX-202503-005</FITID>
+            <NAME>STARBUCKS AKER BRYGGE</NAME>
+            <MEMO>Coffee</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250312000000</DTPOSTED>
+            <TRNAMT>-338.50</TRNAMT>
+            <FITID>AMEX-202503-004</FITID>
+            <NAME>KIWI 587 MAJORSTUEN</NAME>
+            <MEMO>Groceries</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250309000000</DTPOSTED>
+            <TRNAMT>-849.00</TRNAMT>
+            <FITID>AMEX-202503-003</FITID>
+            <NAME>H&amp;M OSLO CITY</NAME>
+            <MEMO>Clothing</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250305000000</DTPOSTED>
+            <TRNAMT>-129.00</TRNAMT>
+            <FITID>AMEX-202503-002</FITID>
+            <NAME>SPOTIFY AB</NAME>
+            <MEMO>Monthly subscription</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250303000000</DTPOSTED>
+            <TRNAMT>-1299.00</TRNAMT>
+            <FITID>AMEX-202503-001</FITID>
+            <NAME>ELKJOP STORO</NAME>
+            <MEMO>Electronics purchase</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250415000000</DTPOSTED>
+            <TRNAMT>-92.00</TRNAMT>
+            <FITID>AMEX-202504-005</FITID>
+            <NAME>STARBUCKS AKER BRYGGE</NAME>
+            <MEMO>Coffee</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250412000000</DTPOSTED>
+            <TRNAMT>-340.50</TRNAMT>
+            <FITID>AMEX-202504-004</FITID>
+            <NAME>KIWI 587 MAJORSTUEN</NAME>
+            <MEMO>Groceries</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250409000000</DTPOSTED>
+            <TRNAMT>-849.00</TRNAMT>
+            <FITID>AMEX-202504-003</FITID>
+            <NAME>H&amp;M OSLO CITY</NAME>
+            <MEMO>Clothing</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250405000000</DTPOSTED>
+            <TRNAMT>-129.00</TRNAMT>
+            <FITID>AMEX-202504-002</FITID>
+            <NAME>SPOTIFY AB</NAME>
+            <MEMO>Monthly subscription</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20250403000000</DTPOSTED>
+            <TRNAMT>-1299.00</TRNAMT>
+            <FITID>AMEX-202504-001</FITID>
+            <NAME>ELKJOP STORO</NAME>
+            <MEMO>Electronics purchase</MEMO>
+          </STMTTRN>
         </BANKTRANLIST>
-        <LEDGERBAL>
-          <BALAMT>-8946.30</BALAMT>
-          <DTASOF>20250415000000</DTASOF>
-        </LEDGERBAL>
       </CCSTMTRS>
     </CCSTMTTRNRS>
   </CREDITCARDMSGSRSV1>
 </OFX>
+
