@@ -10,35 +10,47 @@ Demo project showing how to use Norwegian Beancount importers together.
 
 ## Demo Data
 
-The `data/` directory contains sample bank statements split into monthly exports,
-plus an overlapping export to demonstrate deduplication:
+The `data/` directory contains the canonical generated Demo Dataset for a
+synthetic 2025 household. It is checked in so the demo works immediately, but
+the source of truth is the deterministic generator in
+`scripts/generate_demo_data.py`.
+
+The dataset covers salary, rent, savings transfers, debit-card spending,
+credit-card purchases, refunds, subscriptions, groceries, transport, shopping,
+travel, coffee, services, mortgage repayment, and uncategorized examples.
+SpareBank 1 checking payments to DNB Mastercard and American Express line up
+with the prior card activity where practical.
+
+Each provider has twelve monthly exports plus one February 15 to April 15
+overlap export for deduplication:
 
 ```
 data/
 ├── sparebank1/
 │   ├── 2025-01.csv
-│   ├── 2025-02.csv
-│   ├── 2025-03.csv
-│   ├── 2025-04.csv
-│   ├── 2025-05.csv
-│   ├── 2025-06.csv
+│   ├── ...
+│   ├── 2025-12.csv
 │   └── 2025-02-15_to_2025-04-15.csv
 ├── dnb/
 │   ├── 2025-01.xlsx
-│   ├── 2025-02.xlsx
-│   ├── 2025-03.xlsx
-│   ├── 2025-04.xlsx
-│   ├── 2025-05.xlsx
-│   ├── 2025-06.xlsx
+│   ├── ...
+│   ├── 2025-12.xlsx
 │   └── 2025-02-15_to_2025-04-15.xlsx
 └── amex/
     ├── 2025-01.qbo
-    ├── 2025-02.qbo
-    ├── 2025-03.qbo
-    ├── 2025-04.qbo
-    ├── 2025-05.qbo
-    ├── 2025-06.qbo
+    ├── ...
+    ├── 2025-12.qbo
     └── 2025-02-15_to_2025-04-15.qbo
+```
+
+The generator also writes `generated/2025-mortgage.beancount`, which contains
+the split principal and interest postings needed for mortgage repayment
+analytics. Provider exports stay transaction-only importer inputs.
+
+Regenerate the checked-in statement files after changing the scenario:
+
+```bash
+uv run python scripts/generate_demo_data.py
 ```
 
 ## Quick Start
@@ -64,7 +76,7 @@ uv run import-transactions extract data/amex/
 ### 3. Import transactions
 
 ```bash
-uv run import-transactions extract data/ > imports/2025-02.beancount
+uv run import-transactions extract data/ > imports/2025.beancount
 ```
 
 ### 4. View in Fava
@@ -75,16 +87,29 @@ uv run fava main.beancount
 
 Open http://localhost:5000 in your browser.
 
+### 5. Run demo queries
+
+```bash
+./scripts/run-demo-queries.sh main.beancount
+```
+
+The query report includes spending summaries plus loan insights for mortgage
+principal, interest, and extra repayments.
+
 ## Project Structure
 
 ```
 beancounters/
 ├── pyproject.toml
 ├── main.beancount           # Main ledger file
+├── scripts/
+│   ├── generate_demo_data.py # Deterministic demo data generator
+│   └── run-demo-queries.sh   # Markdown query report
 ├── data/                    # Demo bank statements
 │   ├── sparebank1/
 │   ├── dnb/
 │   └── amex/
+├── generated/               # Generated ledger support files
 ├── imports/                 # Imported transactions
 └── src/beancounters/
     └── importers.py         # Importer configuration

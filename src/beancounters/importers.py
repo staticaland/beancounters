@@ -1,5 +1,7 @@
 """Importer configuration demonstrating all Norwegian bank importers."""
 
+from pathlib import Path
+
 from beangulp import Ingest
 
 # SpareBank 1 importer
@@ -24,6 +26,20 @@ from beancount_no_amex import (
     AmexAccountConfig,
     Importer as AmexImporter,
 )
+
+
+class DemoAmexImporter(AmexImporter):
+    """Accept the README's monthly QBO filenames for the demo data."""
+
+    def identify(self, filepath: str) -> bool:
+        path = Path(filepath)
+        if path.suffix.lower() != ".qbo":
+            return False
+
+        if self.account_id is None:
+            return True
+
+        return self._parse_qbo_file(filepath).account_id == self.account_id
 
 
 def get_importers():
@@ -61,6 +77,9 @@ def get_importers():
                     match("FINN.NO") >> "Expenses:Services",
                     match("HUSLEIE") >> "Expenses:Housing:Rent",
                     match("SAS") >> "Expenses:Travel:Flights",
+                    # Credit-card settlements
+                    match("DNB MASTERCARD") >> "Liabilities:CreditCard:DNB",
+                    match("AMEX AUTOGIRO") >> "Liabilities:CreditCard:Amex",
                     # Income
                     match("SKATTEETATEN") >> "Income:TaxRefund",
                     # Field-based: savings account transfers
@@ -93,13 +112,15 @@ def get_importers():
                     # Other
                     match("VINMONOPOLET") >> "Expenses:Alcohol",
                     match("SAS") >> "Expenses:Travel:Flights",
+                    # Payments from SpareBank 1 checking
+                    match("Innbetaling") >> "Assets:Bank:SpareBank1:Checking",
                 ],
                 default_account="Expenses:Uncategorized",
                 skip_balance_forward=True,
             )
         ),
         # American Express
-        AmexImporter(
+        DemoAmexImporter(
             AmexAccountConfig(
                 account_name="Liabilities:CreditCard:Amex",
                 currency="NOK",
@@ -120,9 +141,12 @@ def get_importers():
                     # Other
                     match("VINMONOPOLET") >> "Expenses:Alcohol",
                     match("SAS") >> "Expenses:Travel:Flights",
+                    # Payments from SpareBank 1 checking
+                    match("AUTOGIROBETALING") >> "Assets:Bank:SpareBank1:Checking",
                 ],
                 default_account="Expenses:Uncategorized",
-            )
+            ),
+            debug=False,
         ),
     ]
 

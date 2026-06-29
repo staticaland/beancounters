@@ -9,6 +9,10 @@ option "operating_currency" "NOK"
 2020-01-01 open Liabilities:CreditCard:DNB NOK
 2020-01-01 open Liabilities:CreditCard:Amex NOK
 
+; Loan accounts
+2020-01-01 open Liabilities:Loan:Mortgage NOK
+2020-01-01 open Expenses:Interest:Mortgage NOK
+
 ; Expense accounts
 2020-01-01 open Expenses:Groceries NOK
 2020-01-01 open Expenses:Transport:Public NOK
@@ -35,7 +39,19 @@ option "operating_currency" "NOK"
 ; Equity
 2020-01-01 open Equity:Opening-Balances NOK
 
+; Opening balances for the generated 2025 demo year
+2024-12-31 * "Opening balances"
+  Assets:Bank:SpareBank1:Checking       35000.00 NOK
+  Assets:Bank:SpareBank1:Savings        85000.00 NOK
+  Equity:Opening-Balances
+
+2025-01-01 balance Assets:Bank:SpareBank1:Checking 35000.00 NOK
+2025-01-01 balance Assets:Bank:SpareBank1:Savings 85000.00 NOK
+2025-01-01 balance Liabilities:CreditCard:DNB 0.00 NOK
+2025-01-01 balance Liabilities:CreditCard:Amex 0.00 NOK
+
 ; Include imported transactions
+include "generated/*.beancount"
 include "imports/*.beancount"
 ;; -*- mode: beancount -*-
 
@@ -1572,5 +1588,3 @@ include "imports/*.beancount"
 ;   type: "DEBIT"
 ;   Liabilities:CreditCard:DNB    -129 NOK
 ;   Expenses:Subscriptions:Music   129 NOK
-
-

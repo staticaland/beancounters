@@ -7,7 +7,7 @@
         <CODE>0</CODE>
         <SEVERITY>INFO</SEVERITY>
       </STATUS>
-      <DTSERVER>20250430000000</DTSERVER>
+      <DTSERVER>20251031000000</DTSERVER>
       <LANGUAGE>ENG</LANGUAGE>
       <FI>
         <ORG>AMEX</ORG>
@@ -18,77 +18,77 @@
     <CCSTMTTRNRS>
       <CCSTMTRS>
         <BANKTRANLIST>
-          <DTSTART>20250401000000</DTSTART>
-          <DTEND>20250430000000</DTEND>
-          <STMTTRN>
-            <TRNTYPE>CREDIT</TRNTYPE>
-            <DTPOSTED>20250426000000</DTPOSTED>
-            <TRNAMT>499.00</TRNAMT>
-            <FITID>AMEX-202504-102</FITID>
-            <NAME>ELKJOP STORO REFUND</NAME>
-            <MEMO>Returned accessory</MEMO>
-          </STMTTRN>
+          <DTSTART>20251001000000</DTSTART>
+          <DTEND>20251031000000</DTEND>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250423000000</DTPOSTED>
+            <DTPOSTED>20251023000000</DTPOSTED>
             <TRNAMT>-2490.00</TRNAMT>
-            <FITID>AMEX-202504-007</FITID>
+            <FITID>AMEX-202510-007</FITID>
             <NAME>SAS EUROBONUS</NAME>
             <MEMO>Travel</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>CREDIT</TRNTYPE>
-            <DTPOSTED>20250421000000</DTPOSTED>
-            <TRNAMT>5814.90</TRNAMT>
-            <FITID>AMEX-202504-PAY</FITID>
+            <DTPOSTED>20251021000000</DTPOSTED>
+            <TRNAMT>5339.90</TRNAMT>
+            <FITID>AMEX-202510-PAY</FITID>
             <NAME>AUTOGIROBETALING</NAME>
             <MEMO>Payment from SpareBank 1</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250418000000</DTPOSTED>
-            <TRNAMT>-619.40</TRNAMT>
-            <FITID>AMEX-202504-006</FITID>
+            <DTPOSTED>20251020000000</DTPOSTED>
+            <TRNAMT>-529.00</TRNAMT>
+            <FITID>AMEX-202510-101</FITID>
+            <NAME>VINMONOPOLET AKER BRYGGE</NAME>
+            <MEMO>Wine purchase</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20251018000000</DTPOSTED>
+            <TRNAMT>-631.40</TRNAMT>
+            <FITID>AMEX-202510-006</FITID>
             <NAME>REMA 1000 TORSHOV</NAME>
             <MEMO>Groceries</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250415000000</DTPOSTED>
+            <DTPOSTED>20251015000000</DTPOSTED>
             <TRNAMT>-92.00</TRNAMT>
-            <FITID>AMEX-202504-005</FITID>
+            <FITID>AMEX-202510-005</FITID>
             <NAME>STARBUCKS AKER BRYGGE</NAME>
             <MEMO>Coffee</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250412000000</DTPOSTED>
-            <TRNAMT>-340.50</TRNAMT>
-            <FITID>AMEX-202504-004</FITID>
+            <DTPOSTED>20251012000000</DTPOSTED>
+            <TRNAMT>-352.50</TRNAMT>
+            <FITID>AMEX-202510-004</FITID>
             <NAME>KIWI 587 MAJORSTUEN</NAME>
             <MEMO>Groceries</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250409000000</DTPOSTED>
+            <DTPOSTED>20251009000000</DTPOSTED>
             <TRNAMT>-849.00</TRNAMT>
-            <FITID>AMEX-202504-003</FITID>
+            <FITID>AMEX-202510-003</FITID>
             <NAME>H&amp;M OSLO CITY</NAME>
             <MEMO>Clothing</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250405000000</DTPOSTED>
+            <DTPOSTED>20251005000000</DTPOSTED>
             <TRNAMT>-129.00</TRNAMT>
-            <FITID>AMEX-202504-002</FITID>
+            <FITID>AMEX-202510-002</FITID>
             <NAME>SPOTIFY AB</NAME>
             <MEMO>Monthly subscription</MEMO>
           </STMTTRN>
           <STMTTRN>
             <TRNTYPE>DEBIT</TRNTYPE>
-            <DTPOSTED>20250403000000</DTPOSTED>
+            <DTPOSTED>20251003000000</DTPOSTED>
             <TRNAMT>-1299.00</TRNAMT>
-            <FITID>AMEX-202504-001</FITID>
+            <FITID>AMEX-202510-001</FITID>
             <NAME>ELKJOP STORO</NAME>
             <MEMO>Electronics purchase</MEMO>
           </STMTTRN>

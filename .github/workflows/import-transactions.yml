@@ -31,7 +31,7 @@ jobs:
         id: import
         run: |
           echo "output<<EOF" >> $GITHUB_OUTPUT
-          uv run import-transactions extract data/ 2>&1 || true
+          uv run import-transactions extract data/ 2>&1
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Write summary
@@ -39,7 +39,7 @@ jobs:
           cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
           # Transaction Import Results
 
-          This workflow automatically imports bank transactions from the sample data files
+          This workflow automatically imports bank transactions from the generated demo data files
           using the Norwegian Beancount importers configured in this project.
 
           ## Data Sources
@@ -48,9 +48,9 @@ jobs:
 
           | Bank | File | Format |
           |------|------|--------|
-          | SpareBank1 | `data/sparebank1/transactions.csv` | CSV |
-          | DNB Mastercard | `data/dnb/statement.xlsx` | Excel |
-          | American Express | `data/amex/activity.qbo` | QBO/OFX |
+          | SpareBank1 | `data/sparebank1/*.csv` | CSV |
+          | DNB Mastercard | `data/dnb/*.xlsx` | Excel |
+          | American Express | `data/amex/*.qbo` | QBO/OFX |
 
           ## How It Works
 
@@ -63,7 +63,7 @@ jobs:
           ```beancount
           SUMMARY_EOF
 
-          uv run import-transactions extract data/ >> $GITHUB_STEP_SUMMARY 2>&1 || true
+          uv run import-transactions extract data/ >> $GITHUB_STEP_SUMMARY 2>&1
 
           cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
           ```
