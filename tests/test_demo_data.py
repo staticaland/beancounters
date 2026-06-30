@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -51,6 +52,7 @@ def test_generated_demo_data_imports_with_configured_importers() -> None:
     result = subprocess.run(
         [sys.executable, "-m", "beancounters.importers", "extract", str(DATA)],
         cwd=ROOT,
+        env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
         text=True,
         capture_output=True,
         check=False,
