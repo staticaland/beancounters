@@ -56,9 +56,82 @@ def test_generate_splits_outputs_adjustment_for_annotated_expense(
     assert '2025-02-03 * "Split: Groceries"' in captured.out
     assert re.search(r"Assets:Receivable:Maria\s+60\.00 NOK", captured.out)
     assert re.search(r"Expenses:Groceries\s+-60\.00 NOK", captured.out)
+    assert re.search(r"generated_by:\s+\"beancounters.generate-splits\"", captured.out)
     assert "open Assets:Receivable:Maria" not in captured.out
     assert "balance" not in captured.out
     assert '"KIWI"' not in captured.out
+
+
+def test_generate_splits_uses_provider_id_for_link_and_source_metadata(
+    tmp_path: Path, capsys
+):
+    config = write_split_config(tmp_path)
+    imported = write_ledger(
+        tmp_path / "imports.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "KIWI" "Groceries"
+          provider_transaction_id: "txn/2025/02/03/kiwi"
+          import_fingerprint: "fallback-fingerprint"
+          split: "maria:50%"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+
+    assert main(["--config", str(config), "--year", "2025", str(imported)]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert re.search(
+        r'2025-02-03 \* "Split: Groceries" \^split-provider-[a-f0-9]{24}',
+        captured.out,
+    )
+    assert re.search(r"generated_by:\s+\"beancounters.generate-splits\"", captured.out)
+    assert re.search(
+        r"source_provider_id:\s+\"txn/2025/02/03/kiwi\"",
+        captured.out,
+    )
+    assert "source_import_fingerprint" not in captured.out
+    assert "fallback-fingerprint" not in captured.out
+    assert "source_narration" not in captured.out
+    assert "source_date" not in captured.out
+    assert "source_amount" not in captured.out
+
+
+def test_generate_splits_uses_import_fingerprint_when_provider_id_is_absent(
+    tmp_path: Path, capsys
+):
+    config = write_split_config(tmp_path)
+    imported = write_ledger(
+        tmp_path / "imports.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Dining NOK
+
+        2025-02-03 * "Restaurant"
+          import_fingerprint: "restaurant-2025-02-03-100"
+          split: "maria:25%"
+          Expenses:Dining  100.00 NOK
+          Assets:Bank:Checking  -100.00 NOK
+        """,
+    )
+
+    assert main(["--config", str(config), "--year", "2025", str(imported)]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert re.search(
+        r'2025-02-03 \* "Split: Restaurant" \^split-fingerprint-[a-f0-9]{24}',
+        captured.out,
+    )
+    assert re.search(
+        r"source_import_fingerprint:\s+\"restaurant-2025-02-03-100\"",
+        captured.out,
+    )
+    assert "source_provider_id" not in captured.out
 
 
 def test_generate_splits_supports_full_expense_share(tmp_path: Path, capsys):
@@ -192,6 +265,7 @@ def test_generate_splits_combines_multiple_annotations_with_note_and_rounding(
     captured = capsys.readouterr()
     assert captured.err == ""
     assert captured.out.count('2025-02-03 * "Split: Restaurant"') == 1
+    assert len(re.findall(r"\^split-fingerprint-[a-f0-9]{24}", captured.out)) == 1
     assert re.search(r"split_note:\s+\"Dinner before movie\"", captured.out)
     assert re.search(r"Assets:Receivable:Maria\s+33\.33 NOK", captured.out)
     assert re.search(r"Assets:Receivable:Olav\s+33\.33 NOK", captured.out)

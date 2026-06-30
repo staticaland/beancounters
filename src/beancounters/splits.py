@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import re
 import sys
 from dataclasses import dataclass
@@ -18,7 +19,21 @@ from beancount.parser import parser, printer
 SPLIT_PERSON_DIRECTIVE = "split-person"
 SPLIT_META_KEY = "split"
 SPLIT_NOTE_META_KEY = "split_note"
+GENERATED_BY_META_KEY = "generated_by"
+SOURCE_PROVIDER_ID_META_KEY = "source_provider_id"
+SOURCE_IMPORT_FINGERPRINT_META_KEY = "source_import_fingerprint"
+GENERATED_BY_VALUE = "beancounters.generate-splits"
 GENERATED_NARRATION_PREFIX = "Split: "
+SPLIT_LINK_PREFIX = "split"
+PROVIDER_ID_META_KEYS = (
+    "provider_transaction_id",
+    "transaction_id",
+    "fitid",
+)
+IMPORT_FINGERPRINT_META_KEYS = (
+    "import_fingerprint",
+    "fingerprint",
+)
 SPLIT_PERSON_KEY_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 SPLIT_RE = re.compile(
     r"^\s*(?P<key>[A-Za-z0-9_-]+)\s*:\s*(?P<share>\d+(?:\.\d+)?)\s*%?\s*$"
@@ -42,6 +57,13 @@ class SplitPerson:
 class SplitAnnotation:
     key: str
     share: Decimal
+
+
+@dataclass(frozen=True)
+class SourceIdentity:
+    kind: str
+    value: str
+    meta_key: str
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -252,6 +274,9 @@ def build_adjustment(
         if not isinstance(split_note, str):
             raise SplitGenerationError(f"{location(entry)} split_note must be a string")
         meta[SPLIT_NOTE_META_KEY] = split_note
+    source_identity = source_identity_for_transaction(entry)
+    meta[GENERATED_BY_META_KEY] = GENERATED_BY_VALUE
+    meta[source_identity.meta_key] = source_identity.value
 
     return data.Transaction(
         meta,
@@ -260,9 +285,57 @@ def build_adjustment(
         None,
         f"Split: {entry.narration}",
         frozenset(),
-        frozenset(),
+        frozenset({split_link(source_identity)}),
         postings,
     )
+
+
+def source_identity_for_transaction(entry: data.Transaction) -> SourceIdentity:
+    provider_id = first_string_meta(entry, PROVIDER_ID_META_KEYS)
+    if provider_id is not None:
+        return SourceIdentity(
+            kind="provider",
+            value=provider_id,
+            meta_key=SOURCE_PROVIDER_ID_META_KEY,
+        )
+
+    import_fingerprint = first_string_meta(entry, IMPORT_FINGERPRINT_META_KEYS)
+    if import_fingerprint is None:
+        import_fingerprint = transaction_fingerprint(entry)
+    return SourceIdentity(
+        kind="fingerprint",
+        value=import_fingerprint,
+        meta_key=SOURCE_IMPORT_FINGERPRINT_META_KEY,
+    )
+
+
+def first_string_meta(entry: data.Transaction, keys: Sequence[str]) -> str | None:
+    for key in keys:
+        value = entry.meta.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
+
+
+def transaction_fingerprint(entry: data.Transaction) -> str:
+    parts = [
+        str(entry.date),
+        entry.payee or "",
+        entry.narration,
+    ]
+    for posting in entry.postings:
+        units = posting.units
+        parts.append(posting.account)
+        if units is None:
+            parts.extend(("", ""))
+        else:
+            parts.extend((str(units.number), units.currency))
+    return hashlib.sha256("\0".join(parts).encode("utf-8")).hexdigest()[:24]
+
+
+def split_link(source_identity: SourceIdentity) -> str:
+    digest = hashlib.sha256(source_identity.value.encode("utf-8")).hexdigest()[:24]
+    return f"{SPLIT_LINK_PREFIX}-{source_identity.kind}-{digest}"
 
 
 def validate_generated_input(entry: data.Transaction) -> None:
