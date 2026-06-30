@@ -17,8 +17,14 @@ from beancount.parser import parser, printer
 
 SPLIT_PERSON_DIRECTIVE = "split-person"
 SPLIT_META_KEY = "split"
+SPLIT_NOTE_META_KEY = "split_note"
+GENERATED_NARRATION_PREFIX = "Split: "
+SPLIT_PERSON_KEY_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 SPLIT_RE = re.compile(
     r"^\s*(?P<key>[A-Za-z0-9_-]+)\s*:\s*(?P<share>\d+(?:\.\d+)?)\s*%?\s*$"
+)
+EXACT_AMOUNT_SPLIT_RE = re.compile(
+    r"^\s*[A-Za-z0-9_-]+\s*:\s*\d+(?:\.\d+)?\s+[A-Z][A-Z0-9'.-]*\s*$"
 )
 
 
@@ -56,6 +62,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Only generate adjustments for source transactions in this year.",
     )
     parser_.add_argument(
+        "--check",
+        action="store_true",
+        help="Validate split annotations without writing Beancount output.",
+    )
+    parser_.add_argument(
         "inputs",
         nargs="+",
         type=Path,
@@ -72,7 +83,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"generate-splits: error: {exc}", file=sys.stderr)
         return 1
 
-    printer.print_entries(adjustments, file=sys.stdout)
+    if not args.check:
+        printer.print_entries(adjustments, file=sys.stdout)
     return 0
 
 
@@ -88,9 +100,12 @@ def generate_split_adjustments(
     for entry in entries:
         if not isinstance(entry, data.Transaction) or entry.date.year != year:
             continue
+        validate_generated_input(entry)
         annotations = annotations_for_transaction(entry)
-        if annotations:
-            adjustments.append(build_adjustment(entry, annotations, people))
+        if not annotations:
+            validate_split_note_requires_split(entry)
+            continue
+        adjustments.append(build_adjustment(entry, annotations, people))
 
     return adjustments
 
@@ -118,7 +133,11 @@ def load_split_people(config_path: Path) -> dict[str, SplitPerson]:
                 f"{location(entry)} split-person requires a string key and account"
             )
 
-        key = raw_key.lower()
+        key = normalize_split_key(raw_key, location(entry))
+        if key in people:
+            raise SplitGenerationError(
+                f"{location(entry)} duplicate split person '{key}'"
+            )
         if account not in opened_accounts:
             raise SplitGenerationError(
                 f"{location(entry)} split person '{key}' account {account} "
@@ -153,6 +172,11 @@ def parse_split_meta(value: object, source_location: str) -> list[SplitAnnotatio
     for raw_part in value.split(","):
         match = SPLIT_RE.match(raw_part)
         if not match:
+            if EXACT_AMOUNT_SPLIT_RE.match(raw_part):
+                raise SplitGenerationError(
+                    f"{source_location} exact amount split annotation {value!r} "
+                    "is not supported in v1"
+                )
             raise SplitGenerationError(
                 f"{source_location} invalid split annotation {value!r}; "
                 "expected key:percent"
@@ -164,10 +188,21 @@ def parse_split_meta(value: object, source_location: str) -> list[SplitAnnotatio
                 f"{source_location} invalid split percentage {value!r}"
             ) from exc
         annotations.append(
-            SplitAnnotation(key=match.group("key").lower(), share=share)
+            SplitAnnotation(
+                key=normalize_split_key(match.group("key"), source_location),
+                share=share,
+            )
         )
 
     return annotations
+
+
+def normalize_split_key(value: str, source_location: str) -> str:
+    if not SPLIT_PERSON_KEY_RE.match(value):
+        raise SplitGenerationError(
+            f"{source_location} split person key {value!r} must be a simple slug"
+        )
+    return value.lower()
 
 
 def build_adjustment(
@@ -175,7 +210,7 @@ def build_adjustment(
     annotations: Sequence[SplitAnnotation],
     people: dict[str, SplitPerson],
 ) -> data.Transaction:
-    expense_posting = find_single_positive_expense_posting(entry)
+    expense_posting = validate_splittable_expense_transaction(entry)
     if expense_posting.units is None:
         raise SplitGenerationError(f"{location(entry)} expense posting has no amount")
 
@@ -209,10 +244,17 @@ def build_adjustment(
         )
     )
 
+    meta = data.new_metadata(
+        entry.meta.get("filename", "<generated>"), entry.meta.get("lineno", 0)
+    )
+    if SPLIT_NOTE_META_KEY in entry.meta:
+        split_note = entry.meta[SPLIT_NOTE_META_KEY]
+        if not isinstance(split_note, str):
+            raise SplitGenerationError(f"{location(entry)} split_note must be a string")
+        meta[SPLIT_NOTE_META_KEY] = split_note
+
     return data.Transaction(
-        data.new_metadata(
-            entry.meta.get("filename", "<generated>"), entry.meta.get("lineno", 0)
-        ),
+        meta,
         entry.date,
         entry.flag,
         None,
@@ -223,20 +265,41 @@ def build_adjustment(
     )
 
 
-def find_single_positive_expense_posting(entry: data.Transaction) -> data.Posting:
+def validate_generated_input(entry: data.Transaction) -> None:
+    if entry.narration.startswith(GENERATED_NARRATION_PREFIX):
+        raise SplitGenerationError(
+            f"{location(entry)} generated split adjustment input is not supported"
+        )
+
+
+def validate_split_note_requires_split(entry: data.Transaction) -> None:
+    if SPLIT_NOTE_META_KEY in entry.meta:
+        raise SplitGenerationError(
+            f"{location(entry)} split_note requires at least one split annotation"
+        )
+
+
+def validate_splittable_expense_transaction(
+    entry: data.Transaction,
+) -> data.Posting:
     expense_postings = [
         posting
         for posting in entry.postings
         if posting.account.startswith("Expenses:")
-        and posting.units is not None
-        and posting.units.number > 0
     ]
     if len(expense_postings) != 1:
         raise SplitGenerationError(
-            f"{location(entry)} split transaction must have exactly one positive "
-            "Expenses:* posting"
+            f"{location(entry)} split transaction must have exactly one Expenses:* "
+            "posting"
         )
-    return expense_postings[0]
+    expense_posting = expense_postings[0]
+    if expense_posting.units is None:
+        raise SplitGenerationError(f"{location(entry)} expense posting has no amount")
+    if expense_posting.units.number <= 0:
+        raise SplitGenerationError(
+            f"{location(entry)} split transaction expense posting must be positive"
+        )
+    return expense_posting
 
 
 def split_amount(amount: Decimal, share: Decimal) -> Decimal:
