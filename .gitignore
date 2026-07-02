@@ -34,3 +34,4 @@ uv.lock
 # Keep imports directory but ignore contents
 imports/*
 !imports/.gitkeep
+!imports/empty.beancount

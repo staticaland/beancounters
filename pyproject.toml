@@ -13,6 +13,7 @@ dependencies = [
     "beancount-no-sparebank1",
     "lxml>=5.0",
     "openpyxl>=3.1",
+    "six>=1.16",
     "typing-extensions>=4.15",
 ]
 
@@ -25,6 +26,7 @@ dev = [
 import-transactions = "beancounters.importers:main"
 generate-splits = "beancounters.splits:main"
 preserve-splits = "beancounters.splits:preserve_main"
+reimport = "beancounters.reimport:main"
 
 [tool.uv]
 package = true

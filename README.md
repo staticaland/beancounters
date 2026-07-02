@@ -73,13 +73,35 @@ uv run import-transactions extract data/dnb/
 uv run import-transactions extract data/amex/
 ```
 
-### 3. Import transactions
+### 3. Import or re-import transactions safely
 
 ```bash
-uv run import-transactions extract data/ > imports/2025.beancount
+uv run reimport --year 2025
 ```
 
-### 4. Preserve split annotations after re-importing
+The command imports `data/` into `imports/2025.beancount`, preserves existing
+split annotations when that import file already exists, validates the split
+pipeline before replacing the import file, and regenerates
+`generated/2025-splits.beancount`.
+
+### 4. View in Fava
+
+```bash
+uv run fava main.beancount
+```
+
+Open http://localhost:5000 in your browser.
+
+### 5. Run demo queries
+
+```bash
+./scripts/run-demo-queries.sh main.beancount
+```
+
+The query report includes spending summaries plus loan insights for mortgage
+principal, interest, and extra repayments.
+
+### Manual import pipeline
 
 When you re-import the same provider exports, keep your user-owned split
 annotations by merging them from the previous import output into the fresh one:
@@ -90,28 +112,11 @@ uv run preserve-splits imports/2025.beancount imports/2025.fresh.beancount > imp
 mv imports/2025.preserved.beancount imports/2025.beancount
 ```
 
-### 5. Generate split adjustments
+Generate split adjustments after changing annotations:
 
 ```bash
 uv run generate-splits --config main.beancount --year 2025 imports/2025.beancount > generated/2025-splits.beancount
 ```
-
-### 6. View in Fava
-
-```bash
-uv run fava main.beancount
-```
-
-Open http://localhost:5000 in your browser.
-
-### 7. Run demo queries
-
-```bash
-./scripts/run-demo-queries.sh main.beancount
-```
-
-The query report includes spending summaries plus loan insights for mortgage
-principal, interest, and extra repayments.
 
 ## Split Expense Workflow
 
@@ -155,16 +160,23 @@ A 100% pass-through expense:
   Expenses:Shopping:Sports          1249.00 NOK
 ```
 
-`generate-splits` reads those annotations and writes generated adjustment
-transactions to the year-scoped support file:
+`reimport` keeps those annotations safe across import refreshes and regenerates
+the year-scoped support file in one step:
+
+```bash
+uv run reimport --year 2025
+```
+
+`generate-splits` is still available when you only need to rebuild adjustment
+transactions from the current import file:
 
 ```bash
 uv run generate-splits --config main.beancount --year 2025 imports/2025.beancount > generated/2025-splits.beancount
 ```
 
-For re-imports, write fresh importer output to a temporary file, preserve the
-annotations from the old imported ledger, then replace the import file with the
-merged output:
+Under the hood, the re-import pipeline writes fresh importer output to a
+temporary file, preserves annotations from the old imported ledger, validates
+the result, then atomically replaces the import file with the merged output:
 
 ```bash
 uv run import-transactions extract data/ > imports/2025.fresh.beancount
