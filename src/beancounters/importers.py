@@ -25,6 +25,34 @@ from beancount_no_amex import (
     Importer as AmexImporter,
 )
 
+COMMON_PATTERNS = [
+    # Groceries
+    match("KIWI") >> "Expenses:Groceries",
+    match("MENY") >> "Expenses:Groceries",
+    match("COOP") >> "Expenses:Groceries",
+    match(r"REMA\s*1000").regex >> "Expenses:Groceries",
+    # Transport
+    match("RUTER") >> "Expenses:Transport:Public",
+    match("STATOIL") >> "Expenses:Transport:Fuel",
+    # Subscriptions
+    match("SPOTIFY") >> "Expenses:Subscriptions:Music",
+    match("NETFLIX") >> "Expenses:Subscriptions:Streaming",
+    match("GITHUB") >> "Expenses:Subscriptions:Dev",
+    match("GET/TELIA") >> "Expenses:Subscriptions:Internet",
+    # Coffee
+    match("STARBUCKS").ignorecase >> "Expenses:Coffee",
+    # Shopping
+    match("POWER") >> "Expenses:Shopping:Electronics",
+    match("ELKJOP") >> "Expenses:Shopping:Electronics",
+    match("XXL") >> "Expenses:Shopping:Sports",
+    match("H&M") >> "Expenses:Shopping:Clothing",
+    # Other common merchants
+    match("VINMONOPOLET") >> "Expenses:Alcohol",
+    match("FINN.NO") >> "Expenses:Services",
+    match("HUSLEIE") >> "Expenses:Housing:Rent",
+    match("SAS") >> "Expenses:Travel:Flights",
+]
+
 
 def get_importers():
     """Configure all importers for demo data."""
@@ -40,27 +68,7 @@ def get_importers():
                     ("11112222333", "Assets:Bank:SpareBank1:Savings"),
                     ("56712345678", "Income:Salary"),
                 ],
-                transaction_patterns=[
-                    # Groceries
-                    match("KIWI") >> "Expenses:Groceries",
-                    match("MENY") >> "Expenses:Groceries",
-                    match("COOP") >> "Expenses:Groceries",
-                    match(r"REMA\s*1000").regex >> "Expenses:Groceries",
-                    # Transport
-                    match("RUTER") >> "Expenses:Transport:Public",
-                    match("STATOIL") >> "Expenses:Transport:Fuel",
-                    # Subscriptions
-                    match("SPOTIFY") >> "Expenses:Subscriptions:Music",
-                    match("NETFLIX") >> "Expenses:Subscriptions:Streaming",
-                    match("GET/TELIA") >> "Expenses:Subscriptions:Internet",
-                    # Shopping
-                    match("POWER") >> "Expenses:Shopping:Electronics",
-                    match("XXL") >> "Expenses:Shopping:Sports",
-                    # Other
-                    match("VINMONOPOLET") >> "Expenses:Alcohol",
-                    match("FINN.NO") >> "Expenses:Services",
-                    match("HUSLEIE") >> "Expenses:Housing:Rent",
-                    match("SAS") >> "Expenses:Travel:Flights",
+                transaction_patterns=COMMON_PATTERNS + [
                     # Credit-card settlements
                     match("DNB MASTERCARD") >> "Liabilities:CreditCard:DNB",
                     match("AMEX AUTOGIRO") >> "Liabilities:CreditCard:Amex",
@@ -78,24 +86,7 @@ def get_importers():
             DnbMastercardConfig(
                 account_name="Liabilities:CreditCard:DNB",
                 currency="NOK",
-                transaction_patterns=[
-                    # Groceries
-                    match("KIWI") >> "Expenses:Groceries",
-                    match("MENY") >> "Expenses:Groceries",
-                    match("COOP") >> "Expenses:Groceries",
-                    match(r"REMA\s*1000").regex >> "Expenses:Groceries",
-                    # Subscriptions
-                    match("SPOTIFY") >> "Expenses:Subscriptions:Music",
-                    match("NETFLIX") >> "Expenses:Subscriptions:Streaming",
-                    match("GITHUB") >> "Expenses:Subscriptions:Dev",
-                    # Coffee
-                    match("STARBUCKS").ignorecase >> "Expenses:Coffee",
-                    # Shopping
-                    match("POWER") >> "Expenses:Shopping:Electronics",
-                    match("XXL") >> "Expenses:Shopping:Sports",
-                    # Other
-                    match("VINMONOPOLET") >> "Expenses:Alcohol",
-                    match("SAS") >> "Expenses:Travel:Flights",
+                transaction_patterns=COMMON_PATTERNS + [
                     # Payments from SpareBank 1 checking
                     match("Innbetaling") >> "Assets:Bank:SpareBank1:Checking",
                 ],
@@ -108,23 +99,7 @@ def get_importers():
             AmexAccountConfig(
                 account_name="Liabilities:CreditCard:Amex",
                 currency="NOK",
-                transaction_patterns=[
-                    # Groceries
-                    match("KIWI") >> "Expenses:Groceries",
-                    match("MENY") >> "Expenses:Groceries",
-                    match(r"REMA\s*1000").regex >> "Expenses:Groceries",
-                    # Subscriptions
-                    match("SPOTIFY") >> "Expenses:Subscriptions:Music",
-                    match("NETFLIX") >> "Expenses:Subscriptions:Streaming",
-                    match("GITHUB") >> "Expenses:Subscriptions:Dev",
-                    # Coffee
-                    match("STARBUCKS").ignorecase >> "Expenses:Coffee",
-                    # Shopping
-                    match("ELKJOP") >> "Expenses:Shopping:Electronics",
-                    match("H&M") >> "Expenses:Shopping:Clothing",
-                    # Other
-                    match("VINMONOPOLET") >> "Expenses:Alcohol",
-                    match("SAS") >> "Expenses:Travel:Flights",
+                transaction_patterns=COMMON_PATTERNS + [
                     # Payments from SpareBank 1 checking
                     match("AUTOGIROBETALING") >> "Assets:Bank:SpareBank1:Checking",
                 ],

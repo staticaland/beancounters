@@ -213,10 +213,21 @@ See `src/beancounters/importers.py` for the full configuration. Key features dem
 
 ### Pattern Matching
 
+Common merchant rules are defined once in `COMMON_PATTERNS` and reused by each
+importer. Bank-specific settlement, income, and transfer rules stay next to the
+importer that needs them.
+
 ```python
-match("KIWI") >> "Expenses:Groceries"
-match(r"REMA\s*1000").regex >> "Expenses:Groceries"
-match("starbucks").ignorecase >> "Expenses:Coffee"
+COMMON_PATTERNS = [
+    match("KIWI") >> "Expenses:Groceries",
+    match(r"REMA\s*1000").regex >> "Expenses:Groceries",
+    match("STARBUCKS").ignorecase >> "Expenses:Coffee",
+    match("SAS") >> "Expenses:Travel:Flights",
+]
+
+DNB_PATTERNS = COMMON_PATTERNS + [
+    match("Innbetaling") >> "Assets:Bank:SpareBank1:Checking",
+]
 ```
 
 ### Amount-Based Rules

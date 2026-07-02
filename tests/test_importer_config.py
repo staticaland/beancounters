@@ -3,6 +3,14 @@
 import pytest
 
 
+def _pattern_key(pattern):
+    return (
+        pattern.pattern.narration,
+        pattern.pattern.regex,
+        pattern.pattern.case_insensitive,
+    )
+
+
 class TestGetImporters:
     """Tests for get_importers() function."""
 
@@ -150,6 +158,39 @@ class TestPatternMatchingRules:
         assert len(sparebank1_importer.transaction_patterns) >= 3
         assert len(dnb_importer.transaction_patterns) >= 3
         assert len(amex_importer.transaction_patterns) >= 3
+
+    def test_common_patterns_are_reused_by_all_importers(
+        self, sparebank1_importer, dnb_importer, amex_importer
+    ):
+        """Test that shared merchant rules are the same pattern objects."""
+        from beancounters.importers import COMMON_PATTERNS
+
+        common_pattern_ids = {id(pattern) for pattern in COMMON_PATTERNS}
+
+        for importer in (sparebank1_importer, dnb_importer, amex_importer):
+            importer_pattern_ids = {
+                id(pattern) for pattern in importer.transaction_patterns
+            }
+            assert common_pattern_ids <= importer_pattern_ids
+
+    def test_common_merchants_map_consistently_across_importers(
+        self, sparebank1_importer, dnb_importer, amex_importer
+    ):
+        """Test that shared merchants classify to the same account on every card."""
+        from beancounters.importers import COMMON_PATTERNS
+
+        expected_accounts = {
+            _pattern_key(pattern): pattern.pattern.account
+            for pattern in COMMON_PATTERNS
+        }
+
+        for importer in (sparebank1_importer, dnb_importer, amex_importer):
+            actual_accounts = {
+                _pattern_key(pattern): pattern.pattern.account
+                for pattern in importer.transaction_patterns
+            }
+            for pattern_key, account in expected_accounts.items():
+                assert actual_accounts[pattern_key] == account
 
 
 class TestImporterIdentification:
