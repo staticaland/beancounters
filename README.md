@@ -126,11 +126,18 @@ Add `split` metadata to imported transactions when another person owes part of
 the expense. The annotation describes the other person's owed share, not your
 remaining share.
 
+Every imported transaction carries identity metadata that the split tooling
+uses to recognize the same transaction across re-imports: Amex transactions
+have a provider-assigned `provider_transaction_id` (the OFX FITID), while
+SpareBank 1 and DNB exports carry no provider ID, so those importers emit a
+deterministic `import_fingerprint` derived from the row content. Never edit
+these values.
+
 A 50% grocery split:
 
 ```beancount
 2025-02-03 * "COOP EXTRA GRONLAND"
-  provider_transaction_id: "sparebank1-2025-02-03-coop-extra"
+  import_fingerprint: "42621a0bb00b5bc474110bc9"
   split: "maria:50%"
   split_note: "Shared weekly groceries"
   Assets:Bank:SpareBank1:Checking  -892.30 NOK
@@ -141,7 +148,7 @@ A 100% pass-through expense:
 
 ```beancount
 2025-02-12 * "XXL SPORT ALNA"
-  provider_transaction_id: "sparebank1-2025-02-12-xxl"
+  import_fingerprint: "255053a94062c640d39d0654"
   split: "maria:100%"
   split_note: "Bought for Maria"
   Assets:Bank:SpareBank1:Checking  -1249.00 NOK

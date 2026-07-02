@@ -45,5 +45,5 @@ A deterministic Beancount link shared by an imported transaction and its generat
 _Avoid_: Trace ID, adjustment ID
 
 **Import Fingerprint**:
-A deterministic identity for an imported transaction when the provider does not supply a stable transaction ID.
+A deterministic identity for an imported transaction when the provider does not supply a stable transaction ID. Importers emit it as `import_fingerprint` metadata, derived from row content (never file name or line number) plus an occurrence counter for identical rows, so the same transaction keeps its identity across overlapping exports. Providers with real transaction IDs emit `provider_transaction_id` instead (Amex uses the OFX FITID).
 _Avoid_: Hash, heuristic match, duplicate key

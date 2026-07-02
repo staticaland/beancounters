@@ -1,7 +1,5 @@
 """Importer configuration demonstrating all Norwegian bank importers."""
 
-from pathlib import Path
-
 from beangulp import Ingest
 
 # SpareBank 1 importer
@@ -26,20 +24,6 @@ from beancount_no_amex import (
     AmexAccountConfig,
     Importer as AmexImporter,
 )
-
-
-class DemoAmexImporter(AmexImporter):
-    """Accept the README's monthly QBO filenames for the demo data."""
-
-    def identify(self, filepath: str) -> bool:
-        path = Path(filepath)
-        if path.suffix.lower() != ".qbo":
-            return False
-
-        if self.account_id is None:
-            return True
-
-        return self._parse_qbo_file(filepath).account_id == self.account_id
 
 
 def get_importers():
@@ -120,7 +104,7 @@ def get_importers():
             )
         ),
         # American Express
-        DemoAmexImporter(
+        AmexImporter(
             AmexAccountConfig(
                 account_name="Liabilities:CreditCard:Amex",
                 currency="NOK",
