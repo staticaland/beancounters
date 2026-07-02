@@ -1,4 +1,4 @@
-"""Generate split adjustment transactions from inline split annotations."""
+"""Generate and preserve split annotations for imported transactions."""
 
 from __future__ import annotations
 
@@ -66,6 +66,19 @@ class SourceIdentity:
     meta_key: str
 
 
+@dataclass(frozen=True)
+class PreservedSplitMetadata:
+    split: str
+    split_note: str | None
+
+
+@dataclass(frozen=True)
+class PreservedSplitRecord:
+    identity: SourceIdentity
+    metadata: PreservedSplitMetadata
+    entry: data.Transaction
+
+
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser_ = argparse.ArgumentParser(
         prog="generate-splits",
@@ -110,6 +123,42 @@ def main(argv: Sequence[str] | None = None) -> int:
     return 0
 
 
+def parse_preserve_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    parser_ = argparse.ArgumentParser(
+        prog="preserve-splits",
+        description="Carry split annotations from old importer output to fresh output.",
+    )
+    parser_.add_argument(
+        "--check",
+        action="store_true",
+        help="Validate split preservation without writing Beancount output.",
+    )
+    parser_.add_argument(
+        "old_imported",
+        type=Path,
+        help="Previous imported ledger containing user-owned split annotations.",
+    )
+    parser_.add_argument(
+        "fresh_imported",
+        type=Path,
+        help="Fresh imported ledger to receive preserved split annotations.",
+    )
+    return parser_.parse_args(argv)
+
+
+def preserve_main(argv: Sequence[str] | None = None) -> int:
+    args = parse_preserve_args(argv)
+    try:
+        entries = preserve_split_annotations(args.old_imported, args.fresh_imported)
+    except SplitGenerationError as exc:
+        print(f"preserve-splits: error: {exc}", file=sys.stderr)
+        return 1
+
+    if not args.check:
+        printer.print_entries(entries, file=sys.stdout)
+    return 0
+
+
 def generate_split_adjustments(
     config_path: Path, input_paths: Iterable[Path], year: int
 ) -> list[data.Transaction]:
@@ -130,6 +179,174 @@ def generate_split_adjustments(
         adjustments.append(build_adjustment(entry, annotations, people))
 
     return adjustments
+
+
+def preserve_split_annotations(
+    old_imported_path: Path, fresh_imported_path: Path
+) -> list[data.Directive]:
+    old_entries = parse_ledger(old_imported_path)
+    fresh_entries = parse_ledger(fresh_imported_path)
+    preserved_records = preserved_split_metadata_records(old_entries)
+    fresh_by_identity = fresh_transactions_by_identity(fresh_entries)
+    preserved_by_identity = validate_preservation_matches(
+        preserved_records, fresh_by_identity
+    )
+
+    merged_entries: list[data.Directive] = []
+    for entry in fresh_entries:
+        if not isinstance(entry, data.Transaction):
+            merged_entries.append(entry)
+            continue
+
+        source_identity = source_identity_for_transaction(entry)
+        preserved = preserved_by_identity.get(source_identity)
+        if preserved is None:
+            merged_entries.append(entry)
+            continue
+
+        merged_entries.append(
+            transaction_with_preserved_split_metadata(
+                entry, preserved, source_identity
+            )
+        )
+
+    return merged_entries
+
+
+def preserved_split_metadata_records(
+    old_entries: Iterable[data.Directive],
+) -> list[PreservedSplitRecord]:
+    preserved: list[PreservedSplitRecord] = []
+    for entry in old_entries:
+        if not isinstance(entry, data.Transaction):
+            continue
+
+        validate_generated_input(entry)
+        annotations = annotations_for_transaction(entry)
+        if not annotations:
+            validate_split_note_requires_split(entry)
+            continue
+
+        preserved.append(
+            PreservedSplitRecord(
+                identity=source_identity_for_transaction(entry),
+                metadata=PreservedSplitMetadata(
+                    split=normalize_split_annotations(annotations),
+                    split_note=normalized_split_note(entry),
+                ),
+                entry=entry,
+            )
+        )
+
+    return preserved
+
+
+def fresh_transactions_by_identity(
+    fresh_entries: Iterable[data.Directive],
+) -> dict[SourceIdentity, list[data.Transaction]]:
+    fresh_by_identity: dict[SourceIdentity, list[data.Transaction]] = {}
+    for entry in fresh_entries:
+        if not isinstance(entry, data.Transaction):
+            continue
+        fresh_by_identity.setdefault(source_identity_for_transaction(entry), []).append(
+            entry
+        )
+    return fresh_by_identity
+
+
+def validate_preservation_matches(
+    preserved_records: Sequence[PreservedSplitRecord],
+    fresh_by_identity: dict[SourceIdentity, list[data.Transaction]],
+) -> dict[SourceIdentity, PreservedSplitMetadata]:
+    old_by_identity: dict[SourceIdentity, list[PreservedSplitRecord]] = {}
+    for record in preserved_records:
+        old_by_identity.setdefault(record.identity, []).append(record)
+
+    preserved_by_identity: dict[SourceIdentity, PreservedSplitMetadata] = {}
+    for identity, records in old_by_identity.items():
+        fresh_matches = fresh_by_identity.get(identity, [])
+        if not fresh_matches:
+            for record in records:
+                warn_orphaned_annotation(record.entry, identity)
+            continue
+        if len(records) > 1:
+            raise SplitGenerationError(
+                "fresh transaction matches multiple old annotated transactions by "
+                f"{identity_label(identity)}: {entry_list_context(fresh_matches)}; "
+                f"old matches: {entry_list_context(record.entry for record in records)}"
+            )
+        if len(fresh_matches) > 1:
+            raise SplitGenerationError(
+                "old annotated transaction matches multiple fresh transactions by "
+                f"{identity_label(identity)}: {transaction_context(records[0].entry)}; "
+                f"fresh matches: {entry_list_context(fresh_matches)}"
+            )
+        preserved_by_identity[identity] = records[0].metadata
+
+    return preserved_by_identity
+
+
+def warn_orphaned_annotation(entry: data.Transaction, identity: SourceIdentity) -> None:
+    print(
+        "preserve-splits: warning: old annotated transaction was not found in fresh "
+        f"import by {identity_label(identity)}: {transaction_context(entry)}",
+        file=sys.stderr,
+    )
+
+
+def transaction_with_preserved_split_metadata(
+    entry: data.Transaction,
+    preserved: PreservedSplitMetadata,
+    source_identity: SourceIdentity,
+) -> data.Transaction:
+    meta = dict(entry.meta)
+    meta[SPLIT_META_KEY] = preserved.split
+    if preserved.split_note is None:
+        meta.pop(SPLIT_NOTE_META_KEY, None)
+    else:
+        meta[SPLIT_NOTE_META_KEY] = preserved.split_note
+
+    links = frozenset(
+        link for link in entry.links if not link.startswith(f"{SPLIT_LINK_PREFIX}-")
+    )
+    links = links | frozenset({split_link(source_identity)})
+    return entry._replace(meta=meta, links=links)
+
+
+def identity_label(identity: SourceIdentity) -> str:
+    return f"{identity.kind} {identity.value!r}"
+
+
+def entry_list_context(entries: Iterable[data.Transaction]) -> str:
+    return "; ".join(transaction_context(entry) for entry in entries)
+
+
+def transaction_context(entry: data.Transaction) -> str:
+    payee = f"{entry.payee} " if entry.payee else ""
+    return f"{location(entry)} {entry.date} {payee}{entry.narration!r}"
+
+
+def normalize_split_annotations(annotations: Sequence[SplitAnnotation]) -> str:
+    return ", ".join(
+        f"{annotation.key}:{format_share(annotation.share)}%"
+        for annotation in annotations
+    )
+
+
+def normalized_split_note(entry: data.Transaction) -> str | None:
+    if SPLIT_NOTE_META_KEY not in entry.meta:
+        return None
+    split_note = entry.meta[SPLIT_NOTE_META_KEY]
+    if not isinstance(split_note, str):
+        raise SplitGenerationError(f"{location(entry)} split_note must be a string")
+    return split_note.strip()
+
+
+def format_share(share: Decimal) -> str:
+    normalized = share.normalize()
+    if normalized == normalized.to_integral():
+        return format(normalized.quantize(Decimal("1")), "f")
+    return format(normalized, "f")
 
 
 def load_split_people(config_path: Path) -> dict[str, SplitPerson]:

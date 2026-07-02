@@ -6,7 +6,7 @@ from textwrap import dedent
 
 import pytest
 
-from beancounters.splits import main
+from beancounters.splits import main, preserve_main
 
 
 def write_ledger(path: Path, text: str) -> Path:
@@ -388,3 +388,327 @@ def test_generate_splits_validation_failures(
 
     captured = capsys.readouterr()
     assert expected_error in captured.err
+
+
+def test_preserve_splits_carries_user_metadata_by_provider_id(
+    tmp_path: Path, capsys
+):
+    old_imported = write_ledger(
+        tmp_path / "old.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "Old KIWI" "Old groceries"
+          provider_transaction_id: "txn-kiwi-001"
+          external_note: "not user owned"
+          split: " MARIA : 50.0% "
+          split_note: "  snacks, apples, and milk  "
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+    fresh_imported = write_ledger(
+        tmp_path / "fresh.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "Fresh KIWI" "Fresh groceries"
+          provider_transaction_id: "txn-kiwi-001"
+          import_fingerprint: "fresh-fingerprint"
+          Expenses:Groceries  121.00 NOK
+          Assets:Bank:Checking  -121.00 NOK
+        """,
+    )
+
+    assert preserve_main([str(old_imported), str(fresh_imported)]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert '2025-02-03 * "Fresh KIWI" "Fresh groceries"' in captured.out
+    assert re.search(r'provider_transaction_id:\s+"txn-kiwi-001"', captured.out)
+    assert re.search(r'import_fingerprint:\s+"fresh-fingerprint"', captured.out)
+    assert re.search(r'split:\s+"maria:50%"', captured.out)
+    assert re.search(r'split_note:\s+"snacks, apples, and milk"', captured.out)
+    assert re.search(r"\^split-provider-[a-f0-9]{24}", captured.out)
+    assert "Old KIWI" not in captured.out
+    assert "Old groceries" not in captured.out
+    assert "external_note" not in captured.out
+    assert "121.00 NOK" in captured.out
+
+
+def test_preserve_splits_normalizes_posting_split_metadata(
+    tmp_path: Path, capsys
+):
+    old_imported = write_ledger(
+        tmp_path / "old.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Dining NOK
+
+        2025-02-03 * "Restaurant"
+          provider_transaction_id: "txn-restaurant-001"
+          split_note: "  before  movie  "
+          Expenses:Dining  100.00 NOK
+            split: " MARIA : 33.3300 , olav:16.670% "
+          Assets:Bank:Checking  -100.00 NOK
+        """,
+    )
+    fresh_imported = write_ledger(
+        tmp_path / "fresh.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Dining NOK
+
+        2025-02-03 * "Restaurant"
+          provider_transaction_id: "txn-restaurant-001"
+          Expenses:Dining  100.00 NOK
+          Assets:Bank:Checking  -100.00 NOK
+        """,
+    )
+
+    assert preserve_main([str(old_imported), str(fresh_imported)]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert re.search(r'split:\s+"maria:33.33%, olav:16.67%"', captured.out)
+    assert re.search(r'split_note:\s+"before  movie"', captured.out)
+
+
+def test_preserve_splits_replaces_stale_split_metadata_and_link(
+    tmp_path: Path, capsys
+):
+    old_imported = write_ledger(
+        tmp_path / "old.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "KIWI"
+          provider_transaction_id: "txn-kiwi-001"
+          split: "maria:25"
+          Expenses:Groceries  80.00 NOK
+          Assets:Bank:Checking  -80.00 NOK
+        """,
+    )
+    fresh_imported = write_ledger(
+        tmp_path / "fresh.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "KIWI" ^split-provider-stale
+          provider_transaction_id: "txn-kiwi-001"
+          split: "stale:99"
+          split_note: "stale note"
+          Expenses:Groceries  80.00 NOK
+          Assets:Bank:Checking  -80.00 NOK
+        """,
+    )
+
+    assert preserve_main([str(old_imported), str(fresh_imported)]) == 0
+
+    captured = capsys.readouterr()
+    assert re.search(r'split:\s+"maria:25%"', captured.out)
+    assert "split_note" not in captured.out
+    assert "split-provider-stale" not in captured.out
+    assert len(re.findall(r"\^split-provider-[a-f0-9]{24}", captured.out)) == 1
+
+
+def test_preserve_splits_check_mode_validates_without_output(tmp_path: Path, capsys):
+    old_imported = write_ledger(
+        tmp_path / "old.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "KIWI"
+          provider_transaction_id: "txn-kiwi-001"
+          split: "maria:50"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+    fresh_imported = write_ledger(
+        tmp_path / "fresh.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "KIWI"
+          provider_transaction_id: "txn-kiwi-001"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+
+    assert preserve_main(["--check", str(old_imported), str(fresh_imported)]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+
+def test_preserve_splits_carries_user_metadata_by_computed_fingerprint(
+    tmp_path: Path, capsys
+):
+    old_imported = write_ledger(
+        tmp_path / "old.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "KIWI" "Groceries"
+          split: " MARIA : 50.0% "
+          split_note: "  weekly shop  "
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+    fresh_imported = write_ledger(
+        tmp_path / "fresh.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "KIWI" "Groceries"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+
+    assert preserve_main([str(old_imported), str(fresh_imported)]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert re.search(r'split:\s+"maria:50%"', captured.out)
+    assert re.search(r'split_note:\s+"weekly shop"', captured.out)
+    assert re.search(r"\^split-fingerprint-[a-f0-9]{24}", captured.out)
+
+
+def test_preserve_splits_warns_for_orphaned_old_annotation(
+    tmp_path: Path, capsys
+):
+    old_imported = write_ledger(
+        tmp_path / "old.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "Missing shop"
+          import_fingerprint: "missing-shop"
+          split: "maria:50"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+    fresh_imported = write_ledger(
+        tmp_path / "fresh.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Dining NOK
+
+        2025-02-03 * "Restaurant"
+          import_fingerprint: "restaurant"
+          Expenses:Dining  80.00 NOK
+          Assets:Bank:Checking  -80.00 NOK
+        """,
+    )
+
+    assert preserve_main([str(old_imported), str(fresh_imported)]) == 0
+
+    captured = capsys.readouterr()
+    assert "preserve-splits: warning:" in captured.err
+    assert "Missing shop" in captured.err
+    assert "fingerprint 'missing-shop'" in captured.err
+    assert '2025-02-03 * "Restaurant"' in captured.out
+    assert "split:" not in captured.out
+
+
+def test_preserve_splits_fails_when_fresh_matches_multiple_old_annotations(
+    tmp_path: Path, capsys
+):
+    old_imported = write_ledger(
+        tmp_path / "old.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "Old groceries A"
+          import_fingerprint: "shared-fingerprint"
+          split: "maria:50"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+
+        2025-02-04 * "Old groceries B"
+          import_fingerprint: "shared-fingerprint"
+          split: "olav:25"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+    fresh_imported = write_ledger(
+        tmp_path / "fresh.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "Fresh groceries"
+          import_fingerprint: "shared-fingerprint"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+
+    assert preserve_main(["--check", str(old_imported), str(fresh_imported)]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "fresh transaction matches multiple old annotated transactions" in captured.err
+    assert "Old groceries A" in captured.err
+    assert "Old groceries B" in captured.err
+    assert "Fresh groceries" in captured.err
+
+
+def test_preserve_splits_fails_when_old_annotation_matches_multiple_fresh(
+    tmp_path: Path, capsys
+):
+    old_imported = write_ledger(
+        tmp_path / "old.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "Old groceries"
+          import_fingerprint: "shared-fingerprint"
+          split: "maria:50"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+    fresh_imported = write_ledger(
+        tmp_path / "fresh.beancount",
+        """
+        2025-02-03 open Assets:Bank:Checking NOK
+        2025-02-03 open Expenses:Groceries NOK
+
+        2025-02-03 * "Fresh groceries A"
+          import_fingerprint: "shared-fingerprint"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+
+        2025-02-04 * "Fresh groceries B"
+          import_fingerprint: "shared-fingerprint"
+          Expenses:Groceries  120.00 NOK
+          Assets:Bank:Checking  -120.00 NOK
+        """,
+    )
+
+    assert preserve_main([str(old_imported), str(fresh_imported)]) == 1
+
+    captured = capsys.readouterr()
+    assert "old annotated transaction matches multiple fresh transactions" in captured.err
+    assert "Old groceries" in captured.err
+    assert "Fresh groceries A" in captured.err
+    assert "Fresh groceries B" in captured.err

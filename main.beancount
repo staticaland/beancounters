@@ -5,6 +5,10 @@ option "operating_currency" "NOK"
 2020-01-01 open Assets:Bank:SpareBank1:Checking NOK
 2020-01-01 open Assets:Bank:SpareBank1:Savings NOK
 
+; Split expense receivables
+2020-01-01 open Assets:Receivable:Maria NOK
+2020-01-01 custom "split-person" "maria" Assets:Receivable:Maria
+
 ; Credit cards
 2020-01-01 open Liabilities:CreditCard:DNB NOK
 2020-01-01 open Liabilities:CreditCard:Amex NOK

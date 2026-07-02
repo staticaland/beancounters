@@ -23,6 +23,7 @@ dev = [
 [project.scripts]
 import-transactions = "beancounters.importers:main"
 generate-splits = "beancounters.splits:main"
+preserve-splits = "beancounters.splits:preserve_main"
 
 [tool.uv]
 package = true

@@ -79,7 +79,24 @@ uv run import-transactions extract data/amex/
 uv run import-transactions extract data/ > imports/2025.beancount
 ```
 
-### 4. View in Fava
+### 4. Preserve split annotations after re-importing
+
+When you re-import the same provider exports, keep your user-owned split
+annotations by merging them from the previous import output into the fresh one:
+
+```bash
+uv run import-transactions extract data/ > imports/2025.fresh.beancount
+uv run preserve-splits imports/2025.beancount imports/2025.fresh.beancount > imports/2025.preserved.beancount
+mv imports/2025.preserved.beancount imports/2025.beancount
+```
+
+### 5. Generate split adjustments
+
+```bash
+uv run generate-splits --config main.beancount --year 2025 imports/2025.beancount > generated/2025-splits.beancount
+```
+
+### 6. View in Fava
 
 ```bash
 uv run fava main.beancount
@@ -87,7 +104,7 @@ uv run fava main.beancount
 
 Open http://localhost:5000 in your browser.
 
-### 5. Run demo queries
+### 7. Run demo queries
 
 ```bash
 ./scripts/run-demo-queries.sh main.beancount
@@ -95,6 +112,73 @@ Open http://localhost:5000 in your browser.
 
 The query report includes spending summaries plus loan insights for mortgage
 principal, interest, and extra repayments.
+
+## Split Expense Workflow
+
+The demo ledger defines one split person:
+
+```beancount
+2020-01-01 open Assets:Receivable:Maria NOK
+2020-01-01 custom "split-person" "maria" Assets:Receivable:Maria
+```
+
+Add `split` metadata to imported transactions when another person owes part of
+the expense. The annotation describes the other person's owed share, not your
+remaining share.
+
+A 50% grocery split:
+
+```beancount
+2025-02-03 * "COOP EXTRA GRONLAND"
+  provider_transaction_id: "sparebank1-2025-02-03-coop-extra"
+  split: "maria:50%"
+  split_note: "Shared weekly groceries"
+  Assets:Bank:SpareBank1:Checking  -892.30 NOK
+  Expenses:Groceries                892.30 NOK
+```
+
+A 100% pass-through expense:
+
+```beancount
+2025-02-12 * "XXL SPORT ALNA"
+  provider_transaction_id: "sparebank1-2025-02-12-xxl"
+  split: "maria:100%"
+  split_note: "Bought for Maria"
+  Assets:Bank:SpareBank1:Checking  -1249.00 NOK
+  Expenses:Shopping:Sports          1249.00 NOK
+```
+
+`generate-splits` reads those annotations and writes generated adjustment
+transactions to the year-scoped support file:
+
+```bash
+uv run generate-splits --config main.beancount --year 2025 imports/2025.beancount > generated/2025-splits.beancount
+```
+
+For re-imports, write fresh importer output to a temporary file, preserve the
+annotations from the old imported ledger, then replace the import file with the
+merged output:
+
+```bash
+uv run import-transactions extract data/ > imports/2025.fresh.beancount
+uv run preserve-splits imports/2025.beancount imports/2025.fresh.beancount > imports/2025.preserved.beancount
+mv imports/2025.preserved.beancount imports/2025.beancount
+uv run generate-splits --config main.beancount --year 2025 imports/2025.beancount > generated/2025-splits.beancount
+```
+
+Settlement payments are normal imported and classified transactions. Classify a
+payment from Maria against the same receivable account instead of using a
+separate settlement matcher:
+
+```beancount
+2025-02-20 * "Overforing fra Maria"
+  Assets:Bank:SpareBank1:Checking   446.15 NOK
+  Assets:Receivable:Maria          -446.15 NOK
+```
+
+Split v1 intentionally does not cover exact amount splits, recurring/default
+split rules, refund semantics, automatic settlement matching, or annotation helpers.
+Keep those cases explicit in the ledger for now.
 
 ## Project Structure
 
@@ -112,7 +196,8 @@ beancounters/
 ├── generated/               # Generated ledger support files
 ├── imports/                 # Imported transactions
 └── src/beancounters/
-    └── importers.py         # Importer configuration
+    ├── importers.py         # Importer configuration
+    └── splits.py            # Split annotation preservation and generation
 ```
 
 ## Importer Configuration

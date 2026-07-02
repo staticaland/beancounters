@@ -48,6 +48,36 @@ def test_demo_data_includes_generated_mortgage_accounting() -> None:
     assert "Extra Mortgage Payment - Year-end savings" in mortgage
 
 
+def test_demo_ledger_declares_split_person() -> None:
+    ledger = (ROOT / "main.beancount").read_text(encoding="utf-8")
+
+    assert "open Assets:Receivable:Maria NOK" in ledger
+    assert 'custom "split-person" "maria" Assets:Receivable:Maria' in ledger
+
+
+def test_readme_documents_split_workflow() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "The annotation describes the other person's owed share" in readme
+    assert 'split: "maria:50%"' in readme
+    assert 'split: "maria:100%"' in readme
+    assert (
+        "uv run preserve-splits imports/2025.beancount "
+        "imports/2025.fresh.beancount > imports/2025.preserved.beancount"
+    ) in readme
+    assert "mv imports/2025.preserved.beancount imports/2025.beancount" in readme
+    assert (
+        "uv run generate-splits --config main.beancount --year 2025 "
+        "imports/2025.beancount > generated/2025-splits.beancount"
+    ) in readme
+    assert "Assets:Receivable:Maria          -446.15 NOK" in readme
+    assert "exact amount splits" in readme
+    assert "recurring/default\nsplit rules" in readme
+    assert "refund semantics" in readme
+    assert "automatic settlement matching" in readme
+    assert "annotation helpers" in readme
+
+
 def test_generated_demo_data_imports_with_configured_importers() -> None:
     result = subprocess.run(
         [sys.executable, "-m", "beancounters.importers", "extract", str(DATA)],
