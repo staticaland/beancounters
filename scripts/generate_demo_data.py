@@ -76,6 +76,10 @@ def signed_total(transactions: list[CardTransaction]) -> Decimal:
     return sum((tx.amount for tx in transactions), Decimal("0.00"))
 
 
+def account_total(transactions: list[BankTransaction]) -> Decimal:
+    return sum((tx.amount for tx in transactions), Decimal("0.00"))
+
+
 def mortgage_transactions(year: int) -> list[MortgageTransaction]:
     rows = [
         MortgageTransaction(d(year, month, 2), f"Mortgage Payment {month_end(year, month).strftime('%B')} {year}", money(5600 + (month - 1) * 35), money(6900 - (month - 1) * 35))
@@ -269,7 +273,13 @@ def qbo_timestamp(value: date) -> str:
     return value.strftime("%Y%m%d000000")
 
 
-def write_amex(path: Path, rows: list[CardTransaction], start: date, end: date) -> None:
+def write_amex(
+    path: Path,
+    rows: list[CardTransaction],
+    start: date,
+    end: date,
+    statement_balance: Decimal,
+) -> None:
     ofx = ET.Element("OFX")
     signon = ET.SubElement(ET.SubElement(ofx, "SIGNONMSGSRSV1"), "SONRS")
     status = ET.SubElement(signon, "STATUS")
@@ -278,17 +288,24 @@ def write_amex(path: Path, rows: list[CardTransaction], start: date, end: date) 
     ET.SubElement(signon, "DTSERVER").text = qbo_timestamp(end)
     ET.SubElement(signon, "LANGUAGE").text = "ENG"
     ET.SubElement(ET.SubElement(signon, "FI"), "ORG").text = "AMEX"
-    ccstmt = ET.SubElement(ET.SubElement(ET.SubElement(ET.SubElement(ofx, "CREDITCARDMSGSRSV1"), "CCSTMTTRNRS"), "CCSTMTRS"), "BANKTRANLIST")
-    ET.SubElement(ccstmt, "DTSTART").text = qbo_timestamp(start)
-    ET.SubElement(ccstmt, "DTEND").text = qbo_timestamp(end)
+    ccstmtrs = ET.SubElement(
+        ET.SubElement(ET.SubElement(ofx, "CREDITCARDMSGSRSV1"), "CCSTMTTRNRS"),
+        "CCSTMTRS",
+    )
+    banktranlist = ET.SubElement(ccstmtrs, "BANKTRANLIST")
+    ET.SubElement(banktranlist, "DTSTART").text = qbo_timestamp(start)
+    ET.SubElement(banktranlist, "DTEND").text = qbo_timestamp(end)
     for tx in rows:
-        trn = ET.SubElement(ccstmt, "STMTTRN")
+        trn = ET.SubElement(banktranlist, "STMTTRN")
         ET.SubElement(trn, "TRNTYPE").text = "CREDIT" if tx.amount > 0 else "DEBIT"
         ET.SubElement(trn, "DTPOSTED").text = qbo_timestamp(tx.date)
         ET.SubElement(trn, "TRNAMT").text = f"{tx.amount:.2f}"
         ET.SubElement(trn, "FITID").text = tx.fitid
         ET.SubElement(trn, "NAME").text = tx.description
         ET.SubElement(trn, "MEMO").text = tx.memo
+    ledgerbal = ET.SubElement(ccstmtrs, "LEDGERBAL")
+    ET.SubElement(ledgerbal, "BALAMT").text = f"{statement_balance:.2f}"
+    ET.SubElement(ledgerbal, "DTASOF").text = qbo_timestamp(end)
 
     xml = ET.tostring(ofx, encoding="unicode", pretty_print=True)
     path.write_text(
@@ -296,6 +313,64 @@ def write_amex(path: Path, rows: list[CardTransaction], start: date, end: date) 
         '<?OFX OFXHEADER="200" VERSION="202" SECURITY="NONE" OLDFILEUID="NONE" NEWFILEUID="NONE"?>\n'
         f"{xml}\n",
         encoding="utf-8",
+    )
+
+
+def pdf_text_object(lines: list[str]) -> str:
+    escaped_lines = [
+        line.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        for line in lines
+    ]
+    commands = ["BT", "/F1 12 Tf", "72 760 Td"]
+    for index, line in enumerate(escaped_lines):
+        if index:
+            commands.append("0 -18 Td")
+        commands.append(f"({line}) Tj")
+    commands.append("ET")
+    return "\n".join(commands)
+
+
+def write_minimal_pdf(path: Path, lines: list[str]) -> None:
+    stream = pdf_text_object(lines).encode("utf-8")
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        (
+            b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
+            b"/Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>"
+        ),
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        b"<< /Length " + str(len(stream)).encode("ascii") + b" >>\nstream\n" + stream + b"\nendstream",
+    ]
+    output = bytearray(b"%PDF-1.4\n")
+    offsets = [0]
+    for number, obj in enumerate(objects, start=1):
+        offsets.append(len(output))
+        output.extend(f"{number} 0 obj\n".encode("ascii"))
+        output.extend(obj)
+        output.extend(b"\nendobj\n")
+    xref_offset = len(output)
+    output.extend(f"xref\n0 {len(objects) + 1}\n".encode("ascii"))
+    output.extend(b"0000000000 65535 f \n")
+    for offset in offsets[1:]:
+        output.extend(f"{offset:010d} 00000 n \n".encode("ascii"))
+    output.extend(
+        (
+            f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\n"
+            f"startxref\n{xref_offset}\n%%EOF\n"
+        ).encode("ascii")
+    )
+    path.write_bytes(bytes(output))
+
+
+def write_sparebank1_statement(path: Path, end: date, balance: Decimal) -> None:
+    write_minimal_pdf(
+        path,
+        [
+            "Kontoutskrift",
+            f"perioden {date(end.year, end.month, 1).strftime('%d.%m.%Y')} - {end.strftime('%d.%m.%Y')}",
+            f"Saldo kr {format_nok(balance)}",
+        ],
     )
 
 
@@ -339,6 +414,7 @@ def emit(output_root: Path, year: int) -> None:
     bank_rows, dnb_rows, amex_rows = build_scenario(year)
     providers = {
         "sparebank1": (".csv", bank_rows),
+        "sparebank1-statements": (".pdf", []),
         "dnb": (".xlsx", dnb_rows),
         "amex": (".qbo", amex_rows),
     }
@@ -350,19 +426,56 @@ def emit(output_root: Path, year: int) -> None:
         end = month_end(year, month)
         write_sparebank1(output_root / "sparebank1" / f"{year}-{month:02d}.csv", [tx for tx in bank_rows if in_range(tx.date, start, end)])
         write_dnb(output_root / "dnb" / f"{year}-{month:02d}.xlsx", [tx for tx in dnb_rows if in_range(tx.date, start, end)])
-        write_amex(output_root / "amex" / f"{year}-{month:02d}.qbo", [tx for tx in amex_rows if in_range(tx.date, start, end)], start, end)
+        write_amex(
+            output_root / "amex" / f"{year}-{month:02d}.qbo",
+            [tx for tx in amex_rows if in_range(tx.date, start, end)],
+            start,
+            end,
+            signed_total([tx for tx in amex_rows if tx.date <= end]),
+        )
+
+        if month == 1:
+            checking_balance = (
+                money("35000.00")
+                + account_total([tx for tx in bank_rows if tx.date <= end])
+                - sum(
+                    (
+                        tx.payment
+                        for tx in mortgage_transactions(year)
+                        if tx.date <= end
+                    ),
+                    Decimal("0.00"),
+                )
+            )
+            write_sparebank1_statement(
+                output_root / "sparebank1-statements" / f"{year}-{month:02d}.pdf",
+                end,
+                checking_balance,
+            )
 
     overlap_name = f"{OVERLAP_START.isoformat()}_to_{OVERLAP_END.isoformat()}"
     write_sparebank1(output_root / "sparebank1" / f"{overlap_name}.csv", [tx for tx in bank_rows if in_range(tx.date, OVERLAP_START, OVERLAP_END)])
     write_dnb(output_root / "dnb" / f"{overlap_name}.xlsx", [tx for tx in dnb_rows if in_range(tx.date, OVERLAP_START, OVERLAP_END)])
-    write_amex(output_root / "amex" / f"{overlap_name}.qbo", [tx for tx in amex_rows if in_range(tx.date, OVERLAP_START, OVERLAP_END)], OVERLAP_START, OVERLAP_END)
+    write_amex(
+        output_root / "amex" / f"{overlap_name}.qbo",
+        [tx for tx in amex_rows if in_range(tx.date, OVERLAP_START, OVERLAP_END)],
+        OVERLAP_START,
+        OVERLAP_END,
+        signed_total([tx for tx in amex_rows if tx.date <= OVERLAP_END]),
+    )
     write_mortgage_ledger(output_root.parent / GENERATED_LEDGER_DIR / f"{year}-mortgage.beancount", year)
     validate(output_root, year)
 
 
 def validate(output_root: Path, year: int) -> None:
-    for provider, suffix in {"sparebank1": ".csv", "dnb": ".xlsx", "amex": ".qbo"}.items():
-        expected = sorted([f"{year}-{month:02d}{suffix}" for month in range(1, 13)] + [f"{OVERLAP_START.isoformat()}_to_{OVERLAP_END.isoformat()}{suffix}"])
+    provider_files = {
+        "sparebank1": (".csv", [f"{year}-{month:02d}" for month in range(1, 13)] + [f"{OVERLAP_START.isoformat()}_to_{OVERLAP_END.isoformat()}"]),
+        "dnb": (".xlsx", [f"{year}-{month:02d}" for month in range(1, 13)] + [f"{OVERLAP_START.isoformat()}_to_{OVERLAP_END.isoformat()}"]),
+        "amex": (".qbo", [f"{year}-{month:02d}" for month in range(1, 13)] + [f"{OVERLAP_START.isoformat()}_to_{OVERLAP_END.isoformat()}"]),
+        "sparebank1-statements": (".pdf", [f"{year}-01"]),
+    }
+    for provider, (suffix, stems) in provider_files.items():
+        expected = sorted(f"{stem}{suffix}" for stem in stems)
         files = sorted(path.name for path in (output_root / provider).iterdir())
         if files != expected:
             raise RuntimeError(f"unexpected {provider} files: {files}")

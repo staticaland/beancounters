@@ -2,17 +2,33 @@ from __future__ import annotations
 
 import csv
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
 from openpyxl import load_workbook
+import pypdf
 
 
 ROOT = Path(__file__).resolve().parents[1]
+WORKSPACE = ROOT.parent
 DATA = ROOT / "data"
 GENERATED = ROOT / "generated"
+
+
+def subprocess_env() -> dict[str, str]:
+    source_paths = [
+        ROOT / "src",
+        WORKSPACE / "beancount-no-sparebank1" / "src",
+        WORKSPACE / "beancount-no-amex",
+        WORKSPACE / "beancount-no-dnb",
+    ]
+    return {
+        **os.environ,
+        "PYTHONPATH": os.pathsep.join(str(path) for path in source_paths),
+    }
 
 
 def test_demo_data_has_full_year_and_single_overlap_export() -> None:
@@ -21,6 +37,7 @@ def test_demo_data_has_full_year_and_single_overlap_export() -> None:
     assert sorted(path.stem for path in (DATA / "sparebank1").glob("*.csv")) == expected
     assert sorted(path.stem for path in (DATA / "dnb").glob("*.xlsx")) == expected
     assert sorted(path.stem for path in (DATA / "amex").glob("*.qbo")) == expected
+    assert sorted(path.stem for path in (DATA / "sparebank1-statements").glob("*.pdf")) == ["2025-01"]
 
 
 def test_demo_data_provider_files_are_structurally_valid() -> None:
@@ -37,6 +54,13 @@ def test_demo_data_provider_files_are_structurally_valid() -> None:
     qbo = (DATA / "amex" / "2025-01.qbo").read_text(encoding="utf-8")
     root = ET.fromstring(qbo.split("?>", maxsplit=2)[-1])
     assert len(root.findall(".//STMTTRN")) >= 6
+    assert root.findtext(".//LEDGERBAL/BALAMT") == "-5307.90"
+
+    with (DATA / "sparebank1-statements" / "2025-01.pdf").open("rb") as file:
+        text = "\n".join(page.extract_text() for page in pypdf.PdfReader(file).pages)
+    assert "Kontoutskrift" in text
+    assert "perioden 01.01.2025 - 31.01.2025" in text
+    assert "Saldo kr 37028,08" in text
 
 
 def test_demo_data_includes_generated_mortgage_accounting() -> None:
@@ -78,11 +102,22 @@ def test_readme_documents_split_workflow() -> None:
     assert "annotation helpers" in readme
 
 
+def test_readme_documents_balance_assertion_policy() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "## Balance Assertions" in readme
+    assert "SpareBank 1" in readme
+    assert "American Express" in readme
+    assert "DNB Mastercard" in readme
+    assert "generate_balance_assertions" in readme
+    assert "day after the statement end date" in readme
+
+
 def test_generated_demo_data_imports_with_configured_importers() -> None:
     result = subprocess.run(
         [sys.executable, "-m", "beancounters.importers", "extract", str(DATA)],
         cwd=ROOT,
-        env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+        env=subprocess_env(),
         text=True,
         capture_output=True,
         check=False,
@@ -92,6 +127,44 @@ def test_generated_demo_data_imports_with_configured_importers() -> None:
     assert "Assets:Bank:SpareBank1:Checking" in result.stdout
     assert "Liabilities:CreditCard:DNB" in result.stdout
     assert "Liabilities:CreditCard:Amex" in result.stdout
+    assert "balance Assets:Bank:SpareBank1:Checking" in result.stdout
+    assert "balance Liabilities:CreditCard:Amex" in result.stdout
+
+
+def test_generated_demo_imports_pass_bean_check_with_balance_assertions(tmp_path: Path) -> None:
+    imported = tmp_path / "imported.beancount"
+    extract_result = subprocess.run(
+        [sys.executable, "-m", "beancounters.importers", "extract", str(DATA)],
+        cwd=ROOT,
+        env=subprocess_env(),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert extract_result.returncode == 0, extract_result.stderr + extract_result.stdout
+    imported.write_text(extract_result.stdout, encoding="utf-8")
+
+    main = (ROOT / "main.beancount").read_text(encoding="utf-8")
+    head = main.split("; Include imported transactions", maxsplit=1)[0]
+    check_ledger = tmp_path / "check.beancount"
+    check_ledger.write_text(
+        head
+        + "; Include generated support and imported transactions\n"
+        + f'include "{GENERATED / "2025-mortgage.beancount"}"\n'
+        + f'include "{imported}"\n',
+        encoding="utf-8",
+    )
+
+    bean_check = shutil.which("bean-check")
+    assert bean_check is not None
+    check_result = subprocess.run(
+        [bean_check, str(check_ledger)],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert check_result.returncode == 0, check_result.stderr + check_result.stdout
 
 
 def test_demo_query_script_reports_loan_insights(tmp_path: Path) -> None:

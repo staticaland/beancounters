@@ -31,6 +31,8 @@ data/
 │   ├── ...
 │   ├── 2025-12.csv
 │   └── 2025-02-15_to_2025-04-15.csv
+├── sparebank1-statements/
+│   └── 2025-01.pdf
 ├── dnb/
 │   ├── 2025-01.xlsx
 │   ├── ...
@@ -46,6 +48,23 @@ data/
 The generator also writes `generated/2025-mortgage.beancount`, which contains
 the split principal and interest postings needed for mortgage repayment
 analytics. Provider exports stay transaction-only importer inputs.
+
+## Balance Assertions
+
+Balance assertions are the demo ledger's backstop that imported activity still
+matches statement balances:
+
+- **SpareBank 1** emits balance assertions from PDF account statements. The
+  transaction CSV export does not carry an account balance, so the PDF statement
+  importer is configured alongside the CSV importer.
+- **American Express** emits balance assertions from QBO `LEDGERBAL` data when
+  `generate_balance_assertions=True` is set on `AmexAccountConfig`.
+- **DNB Mastercard** has no balance assertions because the Excel export does
+  not include a statement balance.
+
+Both assertion-producing importers use the same `generate_balance_assertions`
+field name. Assertions are dated on the day after the statement end date because
+Beancount checks balances at the start of the assertion date.
 
 Regenerate the checked-in statement files after changing the scenario:
 

@@ -93,6 +93,10 @@
             <MEMO>Electronics purchase</MEMO>
           </STMTTRN>
         </BANKTRANLIST>
+        <LEDGERBAL>
+          <BALAMT>-5319.90</BALAMT>
+          <DTASOF>20250430000000</DTASOF>
+        </LEDGERBAL>
       </CCSTMTRS>
     </CCSTMTTRNRS>
   </CREDITCARDMSGSRSV1>

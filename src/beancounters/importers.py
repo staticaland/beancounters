@@ -5,6 +5,8 @@ from beangulp import Ingest
 # SpareBank 1 importer
 from beancount_no_sparebank1 import (
     DepositAccountImporter,
+    PDFStatementConfig,
+    PDFStatementImporter,
     Sparebank1AccountConfig,
     match,
     when,
@@ -81,6 +83,15 @@ def get_importers():
                 default_income_account="Income:Other",
             )
         ),
+        # SpareBank 1 balance statements
+        PDFStatementImporter(
+            PDFStatementConfig(
+                account_name="Assets:Bank:SpareBank1:Checking",
+                currency="NOK",
+                prefix="sparebank1_statement",
+                generate_balance_assertions=True,
+            )
+        ),
         # DNB Mastercard
         DnbImporter(
             DnbMastercardConfig(
@@ -99,6 +110,7 @@ def get_importers():
             AmexAccountConfig(
                 account_name="Liabilities:CreditCard:Amex",
                 currency="NOK",
+                generate_balance_assertions=True,
                 transaction_patterns=COMMON_PATTERNS + [
                     # Payments from SpareBank 1 checking
                     match("AUTOGIROBETALING") >> "Assets:Bank:SpareBank1:Checking",
